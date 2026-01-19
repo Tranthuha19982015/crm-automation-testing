@@ -1,4 +1,23 @@
 package com.hatester.drivers;
 
+import org.openqa.selenium.WebDriver;
+
 public class DriverManager {
+    public static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+    private DriverManager() {
+    }
+
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
+
+    public static void setDriver(WebDriver driver) {
+        DriverManager.driver.set(driver);
+    }
+
+    public static void quitDriver() {
+        driver.get().quit();
+        driver.remove();
+    }
 }
