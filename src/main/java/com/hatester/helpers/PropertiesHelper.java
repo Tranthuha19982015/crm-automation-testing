@@ -1,5 +1,7 @@
 package com.hatester.helpers;
 
+import com.hatester.utils.LogUtils;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class PropertiesHelper {
             linkFile = SystemHelper.getCurrentDir() + relPropertiesFilePathDefault;
             return properties;
         } catch (IOException ioe) {
-            System.out.println("Cannot load properties file: " + linkFile);
+            LogUtils.error("Cannot load properties file: " + linkFile);
             throw new RuntimeException(ioe);
         }
     }
@@ -42,7 +44,7 @@ public class PropertiesHelper {
         try (FileInputStream fis = new FileInputStream(linkFile)) {
             temp.load(fis);
         } catch (Exception e) {
-            System.out.println("Cannot load properties file: " + linkFile);
+            LogUtils.error("Cannot load properties file: " + linkFile);
             throw new RuntimeException(e);
         }
         properties = temp;
@@ -74,7 +76,7 @@ public class PropertiesHelper {
         try (FileOutputStream out = new FileOutputStream(linkFile)) {
             properties.store(out, null);
         } catch (Exception e) {
-            System.out.println("Cannot write property file: " + linkFile);
+            LogUtils.error("Cannot write property file: " + linkFile);
             throw new RuntimeException(e);
         }
     }

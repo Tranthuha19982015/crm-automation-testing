@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.hatester.utils.LogUtils;
 import org.apache.poi.ss.usermodel.*;
 
 public class ExcelHelper {
@@ -166,7 +167,7 @@ public class ExcelHelper {
             int noOfRows = sh.getPhysicalNumberOfRows();
             int noOfCols = row.getLastCellNum();
 
-            System.out.println(noOfRows + " - " + noOfCols);
+            LogUtils.info(noOfRows + " - " + noOfCols);
 
             Cell cell;
             data = new Object[noOfRows - 1][noOfCols];
@@ -221,7 +222,7 @@ public class ExcelHelper {
                 }
             }
         } catch (Exception e) {
-            System.out.println("The exception is:" + e.getMessage());
+            LogUtils.error("The exception is:" + e.getMessage());
             throw new RuntimeException(e);
         }
         return data;
@@ -235,7 +236,7 @@ public class ExcelHelper {
             Row row = sheet.getRow(0);
             return row.getLastCellNum();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LogUtils.error(e.getMessage());
             throw (e);
         }
     }
@@ -274,8 +275,8 @@ public class ExcelHelper {
 
             int totalColumns = headerRow.getPhysicalNumberOfCells();
 
-            System.out.println("Columns: " + totalColumns);
-            System.out.println("StartRow: " + startRow + " - EndRow: " + endRow);
+            LogUtils.info("Columns: " + totalColumns);
+            LogUtils.info("StartRow: " + startRow + " - EndRow: " + endRow);
 
             for (int rowNum = startRow; rowNum <= endRow; rowNum++) {
 
