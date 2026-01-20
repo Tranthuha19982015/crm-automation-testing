@@ -263,6 +263,7 @@ public class WebUI {
     @Step("Open URL: {0}")
     public static void openURL(String url) {
         DriverManager.getDriver().get(url);
+        waitForPageLoaded();
         sleep(getSleepTime());
         LogUtils.info("Open URL: " + url);
         if (isScreenshotAllSteps()) {
