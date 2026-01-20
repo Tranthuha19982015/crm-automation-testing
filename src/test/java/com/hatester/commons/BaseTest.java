@@ -23,11 +23,12 @@ public class BaseTest {
         PropertiesHelper.loadAllFiles();
     }
 
+    @Parameters("browser")
     @BeforeMethod
-    @Parameters("brower")
-    public void setupDriver(@Optional String browserName) {
+    public void setupDriver(@Optional("browser") String browserName) {
         WebDriver driver;
-        if (getBrowser() != null && getBrowser().isBlank()) {
+
+        if (getBrowser() != null && !getBrowser().isBlank()) {
             browserName = getBrowser();
         }
 
@@ -66,7 +67,7 @@ public class BaseTest {
 
         DriverManager.setDriver(driver);
 
-        if (isHeadless()) {
+        if (!isHeadless()) {
             driver.manage().window().maximize();
         }
 
