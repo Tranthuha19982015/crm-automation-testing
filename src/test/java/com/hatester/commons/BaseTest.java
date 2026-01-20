@@ -13,6 +13,7 @@ import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 
 import static com.hatester.config.FrameworkConfig.*;
+import static com.hatester.config.FrameworkConfig.isHeadless;
 
 @Listeners(TestListener.class)
 public class BaseTest {
@@ -68,7 +69,8 @@ public class BaseTest {
         DriverManager.setDriver(driver);
 
         if (!isHeadless()) {
-            driver.manage().window().maximize();
+            LogUtils.info("Headless: " + isHeadless());
+            DriverManager.getDriver().manage().window().maximize();
         }
 
         softAssert = new SoftAssert();
