@@ -1,13 +1,12 @@
 package com.hatester.listeners;
 
-import com.aventstack.extentreports.Status;
 import com.hatester.helpers.*;
 import com.hatester.utils.LogUtils;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import static com.hatester.constants.FrameworkConstant.*;
+import static com.hatester.config.FrameworkConfig.*;
 
 public class TestListener implements ITestListener {
 
@@ -33,7 +32,7 @@ public class TestListener implements ITestListener {
     public void onTestStart(ITestResult result) {
         LogUtils.info("Test Started: " + result.getName());
 
-        if (VIDEO_RECORD.equals("true")) {
+        if (isVideoRecord()) {
             CaptureHelper.startRecord(result.getName());
         }
     }
@@ -42,7 +41,7 @@ public class TestListener implements ITestListener {
     public void onTestSuccess(ITestResult result) {
         LogUtils.info("Test case " + result.getName() + " is passed.");
 
-        if (VIDEO_RECORD.equals("true")) {
+        if (isVideoRecord()) {
             CaptureHelper.stopRecord();
         }
     }
@@ -54,7 +53,7 @@ public class TestListener implements ITestListener {
         LogUtils.error("==> Reason: " + result.getThrowable());
         CaptureHelper.takeScreenshot(result.getName() + "_" + SystemHelper.getDateTimeNow());
 
-        if (VIDEO_RECORD.equals("true")) {
+        if (isVideoRecord()) {
             CaptureHelper.stopRecord();
         }
     }
@@ -63,7 +62,7 @@ public class TestListener implements ITestListener {
     public void onTestSkipped(ITestResult result) {
         LogUtils.warn("Test case " + result.getName() + " is skipped.");
 
-        if (VIDEO_RECORD.equals("true")) {
+        if (isVideoRecord()) {
             CaptureHelper.stopRecord();
         }
     }

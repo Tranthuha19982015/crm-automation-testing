@@ -12,7 +12,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 
-import static com.hatester.constants.FrameworkConstant.*;
+import static com.hatester.config.FrameworkConfig.*;
 
 @Listeners(TestListener.class)
 public class BaseTest {
@@ -27,8 +27,8 @@ public class BaseTest {
     @Parameters("brower")
     public void setupDriver(@Optional String browserName) {
         WebDriver driver;
-        if (BROWSER != null && BROWSER.isBlank()) {
-            browserName = BROWSER;
+        if (getBrowser() != null && getBrowser().isBlank()) {
+            browserName = getBrowser();
         }
 
         switch (browserName.trim().toLowerCase()) {
@@ -44,9 +44,9 @@ public class BaseTest {
                 options.addArguments("--disable-notifications");
                 options.addArguments("--disable-infobars");
 
-                if (HEADLESS.equalsIgnoreCase("true")) {
+                if (isHeadless()) {
                     options.addArguments("--headless=new");
-                    options.addArguments("--window-size=" + WINDOW_SIZE);
+                    options.addArguments("--window-size=" + getWindowSize());
                 }
 
                 driver = new ChromeDriver(options);
@@ -66,7 +66,7 @@ public class BaseTest {
 
         DriverManager.setDriver(driver);
 
-        if (HEADLESS.equals("true")) {
+        if (isHeadless()) {
             driver.manage().window().maximize();
         }
 

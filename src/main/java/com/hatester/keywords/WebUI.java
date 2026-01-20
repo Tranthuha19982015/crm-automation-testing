@@ -1,9 +1,6 @@
 package com.hatester.keywords;
 
-import com.aventstack.extentreports.Status;
 import com.hatester.drivers.DriverManager;
-import com.hatester.helpers.PropertiesHelper;
-import com.hatester.helpers.SystemHelper;
 import com.hatester.reports.AllureManager;
 import com.hatester.utils.LogUtils;
 import io.qameta.allure.Step;
@@ -20,7 +17,7 @@ import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.util.List;
 
-import static com.hatester.constants.FrameworkConstant.*;
+import static com.hatester.config.FrameworkConfig.*;
 
 public class WebUI {
     public static void logConsole(Object message) {
@@ -49,7 +46,7 @@ public class WebUI {
     public static WebElement waitForElementVisible(By by) {
         WebElement element = null;
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(WAIT_TIMEOUT), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
             element = wait.until(ExpectedConditions.visibilityOfElementLocated(by));
             highlightElement(by);
             return element;
@@ -63,7 +60,7 @@ public class WebUI {
     public static WebElement waitForElementVisible(By by, int seconds) {
         WebElement element = null;
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
             element = wait.until(ExpectedConditions.visibilityOfElementLocated(by));
             highlightElement(by);
             return element;
@@ -77,7 +74,7 @@ public class WebUI {
     public static WebElement waitForElementToBeClickable(By by) {
         WebElement element = null;
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(WAIT_TIMEOUT), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
             element = wait.until(ExpectedConditions.elementToBeClickable(by));
             highlightElement(by);
             return element;
@@ -91,7 +88,7 @@ public class WebUI {
     public static WebElement waitForElementToBeClickable(By by, int seconds) {
         WebElement element = null;
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
             element = wait.until(ExpectedConditions.elementToBeClickable(by));
             highlightElement(by);
             return element;
@@ -105,7 +102,7 @@ public class WebUI {
     public static WebElement waitForElementPresent(By by) {
         WebElement element = null;
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(WAIT_TIMEOUT), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
             element = wait.until(ExpectedConditions.presenceOfElementLocated(by));
             highlightElement(by);
             return element;
@@ -119,7 +116,7 @@ public class WebUI {
     public static WebElement waitForElementPresent(By by, int seconds) {
         WebElement element = null;
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
             element = wait.until(ExpectedConditions.presenceOfElementLocated(by));
             highlightElement(by);
             return element;
@@ -131,7 +128,7 @@ public class WebUI {
     }
 
     public static void waitForPageLoaded() {
-        WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(PAGE_LOAD_TIMEOUT), Duration.ofMillis(POOL_TIME));
+        WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getPageLoadTimeout()), Duration.ofMillis(getPoolTime()));
         JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
 
         ExpectedCondition<Boolean> jsLoad = driver -> ((JavascriptExecutor) DriverManager.getDriver())
@@ -152,7 +149,7 @@ public class WebUI {
 
     public static void waitForElementNotVisible(By by) {
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(WAIT_TIMEOUT), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
             wait.until(ExpectedConditions.invisibilityOf(getWebElement(by)));
         } catch (Throwable error) {
             LogUtils.error("Timeout waiting for the element Not Visible " + by.toString());
@@ -163,7 +160,7 @@ public class WebUI {
     public static void waitForSearchResult(By by) {
         try {
             int oldCount = getWebElements(by).size();
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(WAIT_TIMEOUT), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
             wait.until(ExpectedConditions.numberOfElementsToBeLessThan(by, oldCount));
         } catch (Throwable error) {
             LogUtils.error("Timeout while waiting for search results. " + by.toString());
@@ -173,7 +170,7 @@ public class WebUI {
 
     public static void switchToFrame(By by) {
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(WAIT_TIMEOUT), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(by));
             LogUtils.info("Switched to iframe: " + by);
         } catch (Throwable error) {
@@ -184,7 +181,7 @@ public class WebUI {
 
     public static void switchToFrame(By by, int seconds) {
         try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(POOL_TIME));
+            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(by));
             LogUtils.info("Switched to iframe: " + by);
         } catch (Throwable error) {
@@ -266,20 +263,20 @@ public class WebUI {
     @Step("Open URL: {0}")
     public static void openURL(String url) {
         DriverManager.getDriver().get(url);
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         LogUtils.info("Open URL: " + url);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
     @Step
     public static String getCurrentURL() {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         String currentUrl = DriverManager.getDriver().getCurrentUrl();
         LogUtils.info("Current URL: " + currentUrl);
         AllureManager.saveTextLog("Current URL: " + currentUrl);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
         return currentUrl;
@@ -287,60 +284,60 @@ public class WebUI {
 
     @Step("Click on element: {0}")
     public static void clickElement(By by) {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         waitForElementToBeClickable(by).click();
         LogUtils.info("Click on element " + by);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
     @Step("Click on element: {0} with timeout: {1} seconds")
     public static void clickElement(By by, int seconds) {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         waitForElementToBeClickable(by, seconds).click();
         LogUtils.info("Click on element " + by + "with: " + seconds + "(s)");
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
     @Step("Clear text of element: {0}")
     public static void clearElementText(By by) {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         waitForElementVisible(by).clear();
         LogUtils.info("Clear text of element: " + by);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
     @Step("Clear text of element: {0} with timeout: {1} seconds")
     public static void clearElementText(By by, int seconds) {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         waitForElementVisible(by).clear();
         LogUtils.info("Clear text of element: " + by + "with: " + seconds + "(s)");
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
     @Step("Set text: {1} on element: {0}")
     public static void setText(By by, String text) {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         waitForElementVisible(by).sendKeys(text);
         LogUtils.info("Set text " + text + " on element " + by);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
     @Step("Set text: {1} on element: {0} with timeout: {2} seconds")
     public static void setText(By by, String text, int seconds) {
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         waitForElementVisible(by, seconds).sendKeys(text);
         LogUtils.info("Set text " + text + " on element " + by + "with: " + seconds + "(s)");
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
@@ -349,7 +346,7 @@ public class WebUI {
     public static void setKey(By by, Keys key) {
         waitForElementVisible(by).sendKeys(key);
         LogUtils.info("Set key on element: " + by);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
@@ -358,7 +355,7 @@ public class WebUI {
     public static void setKey(By by, Keys key, int seconds) {
         waitForElementVisible(by).sendKeys(key);
         LogUtils.info("Set key on element: " + by + "with: " + seconds + "(s)");
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
@@ -368,7 +365,7 @@ public class WebUI {
         waitForPageLoaded();
         getWebElement(by).sendKeys(text, key);
         LogUtils.info("Set text and key: " + text + " on element " + by);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
@@ -378,7 +375,7 @@ public class WebUI {
         waitForPageLoaded();
         getWebElement(by).sendKeys(text, key);
         LogUtils.info("Set text and key: " + text + " on element " + by + "with: " + seconds + "(s)");
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
@@ -386,11 +383,11 @@ public class WebUI {
     @Step("Get text of element: {0}")
     public static String getElementText(By by) {
         waitForElementVisible(by);
-        sleep(SLEEP_TIME);
+        sleep(getSleepTime());
         LogUtils.info("Get text of element: " + by);
         String text = getWebElement(by).getText();
         LogUtils.info("==> TEXT: " + text);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
         AllureManager.saveTextLog("==> TEXT: " + text);
@@ -403,7 +400,7 @@ public class WebUI {
         LogUtils.info("Get attribute of element " + by);
         String value = getWebElement(by).getAttribute(attributeName);
         LogUtils.info("==> Attribute value: " + value);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
         AllureManager.saveTextLog("==> Attribute value: " + value);
@@ -416,7 +413,7 @@ public class WebUI {
         LogUtils.info("Get CSS value " + cssPropertyName + " of element " + by);
         String value = getWebElement(by).getCssValue(cssPropertyName);
         LogUtils.info("==> CSS value: " + value);
-        if (SCREENSHOT_ALL_STEPS.equals("true")) {
+        if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
         AllureManager.saveTextLog("==> CSS value: " + value);

@@ -14,7 +14,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-import static com.hatester.constants.FrameworkConstant.*;
+import static com.hatester.config.FrameworkConfig.*;
 import static org.monte.media.FormatKeys.*;
 import static org.monte.media.VideoFormatKeys.*;
 
@@ -41,7 +41,7 @@ public class CaptureHelper extends ScreenRecorder {
 
     public static void startRecord(String videoRecordName) {
         //Tạo thư mục để lưu file video vào
-        File file = new File(SystemHelper.getCurrentDir() + VIDEO_RECORD_PATH);
+        File file = new File(SystemHelper.getCurrentDir() + getVideoRecordPath());
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = screenSize.width;
@@ -84,13 +84,13 @@ public class CaptureHelper extends ScreenRecorder {
         TakesScreenshot ts = (TakesScreenshot) DriverManager.getDriver();
         File source = ts.getScreenshotAs(OutputType.FILE);
 
-        File theDir = new File(SCREENSHOT_PATH);
+        File theDir = new File(getScreenshotPath());
         if (!theDir.exists()) {
             theDir.mkdirs();
         }
 
         try {
-            FileHandler.copy(source, new File(SCREENSHOT_PATH + "/" + screenshotName + ".png"));
+            FileHandler.copy(source, new File(getScreenshotPath() + "/" + screenshotName + ".png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
