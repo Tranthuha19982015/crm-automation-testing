@@ -9,6 +9,7 @@ public class FrameworkConstant {
     public static final String URL = PropertiesHelper.getValue("URL");
     public static final String EMAIL = PropertiesHelper.getValue("EMAIL");
     public static final String PASSWORD = PropertiesHelper.getValue("PASSWORD");
+    public static final String ADMIN_DASHBOARD_URL=PropertiesHelper.getValue("ADMIN_DASHBOARD_URL");
 
     public static final String SCREENSHOT_PATH = PropertiesHelper.getValue("SCREENSHOT_PATH");
     public static final String VIDEO_RECORD_PATH = PropertiesHelper.getValue("VIDEO_RECORD_PATH");
