@@ -15,21 +15,21 @@ public class LoginTest extends BaseTest {
     private LoginPage loginPage;
     private DashboardPage dashboardPage;
 
-    @Test(dataProvider = "loginSuccessData", dataProviderClass = DataProviderFactory.class)
+    @Test(priority = 1, dataProvider = "loginSuccessData", dataProviderClass = DataProviderFactory.class)
     public void testLoginSuccess(LoginDTO loginDTO) {
         loginPage = new LoginPage();
         loginPage.login(loginDTO);
         loginPage.verifyLoginSuccess();
     }
 
-    @Test(dataProvider = "invalidLoginEmailData", dataProviderClass = DataProviderFactory.class)
+    @Test(priority = 2, dataProvider = "invalidLoginEmailData", dataProviderClass = DataProviderFactory.class)
     public void testLoginFailedWithEmail(LoginDTO loginDTO) {
         loginPage = new LoginPage();
         loginPage.login(loginDTO);
         loginPage.verifyLoginFailedWithInvalidEmailOrPassword();
     }
 
-    @Test(dataProvider = "invalidLoginPasswordData", dataProviderClass = DataProviderFactory.class)
+    @Test(priority = 3, dataProvider = "invalidLoginPasswordData", dataProviderClass = DataProviderFactory.class)
     public void testLoginFailedWithPassword(LoginDTO loginDTO) {
         loginPage = new LoginPage();
         loginPage.login(loginDTO);
