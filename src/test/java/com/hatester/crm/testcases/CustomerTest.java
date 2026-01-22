@@ -7,6 +7,8 @@ import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.crm.testcontext.TestContext;
 import com.hatester.dataproviders.DataProviderFactory;
+import com.hatester.helpers.RuntimeDataHelper;
+import com.hatester.helpers.SystemHelper;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.testng.annotations.Test;
@@ -31,6 +33,11 @@ public class CustomerTest extends BaseTest {
         customerPage.verifyCustomerDetailsTabIsActive();
         customerPage.fillData(TestContext.getCustomer());
         customerPage.clickButtonSave();
+
+        String key = "customer" + System.currentTimeMillis();
+        RuntimeDataHelper.set(key, TestContext.getCustomer().getCompany());
+        RuntimeDataHelper.set("latestCustomer", key);
+
         customerPage.goToCustomersFromMenu();
         customerPage.searchCustomer(TestContext.getCustomer().getCompany());
         customerPage.verifyCustomerIsAddedSuccessfully(TestContext.getCustomer().getCompany());
