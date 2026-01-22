@@ -13,7 +13,7 @@ public class FrameworkConfig {
     }
 
     public static boolean isHeadless() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("HEADLESS")) ;
+        return Boolean.parseBoolean(PropertiesHelper.getValue("HEADLESS"));
     }
 
     public static String getWindowSize() {
@@ -45,7 +45,7 @@ public class FrameworkConfig {
     }
 
     public static boolean isScreenshotAllSteps() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("SCREENSHOT_ALL_STEPS")) ;
+        return Boolean.parseBoolean(PropertiesHelper.getValue("SCREENSHOT_ALL_STEPS"));
     }
 
     public static boolean isScreenshotPassed() {
