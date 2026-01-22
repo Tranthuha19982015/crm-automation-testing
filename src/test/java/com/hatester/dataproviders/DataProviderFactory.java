@@ -1,6 +1,8 @@
 package com.hatester.dataproviders;
 
+import com.hatester.crm.mappers.CustomerMapper;
 import com.hatester.crm.mappers.LoginMapper;
+import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.models.LoginDTO;
 import com.hatester.helpers.ExcelHelper;
 import org.testng.annotations.DataProvider;
@@ -33,6 +35,7 @@ public class DataProviderFactory {
         return finalData;
     }
 
+    //data login
     @DataProvider(name = "loginSuccessData")
     public Object[][] loginSuccess() {
         return getLoginData(1, 1);
@@ -46,5 +49,21 @@ public class DataProviderFactory {
     @DataProvider(name = "invalidLoginPasswordData")
     public Object[][] invalidLoginPassword() {
         return getLoginData(3, 3);
+    }
+
+    //data customer
+    @DataProvider(name = "addCustomerData")
+    public Object[][] addCustomer() {
+        ExcelHelper excel = new ExcelHelper();
+        Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 2);
+
+        Object[][] finalData = new Object[excelDataMap.length][1];
+
+        for (int i = 0; i < excelDataMap.length; i++) {
+            Map<String, String> map = (Map<String, String>) excelDataMap[i][0];
+            CustomerDTO customerDTO = CustomerMapper.customerMapper(map);
+            finalData[i][0] = customerDTO;
+        }
+        return finalData;
     }
 }
