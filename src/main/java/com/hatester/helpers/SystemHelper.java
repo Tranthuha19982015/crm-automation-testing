@@ -12,13 +12,13 @@ public class SystemHelper {
         return currentDir;
     }
 
-    public static String getCurrentDateSimple() {
+    public static String getDateTimeSimple() {
         return new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
     }
 
     public static String getDateTimeNow() {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDate = now.format(dateTimeFormatter)
                 .replace("-", "")
                 .replace(" ", "_")
