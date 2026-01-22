@@ -211,7 +211,6 @@ public class WebUI {
     }
 
     public static Boolean checkElementExist(By by) {
-        waitForElementVisible(by);
         List<WebElement> listElement = getWebElements(by);
 
         if (listElement.size() > 0) {
@@ -260,12 +259,12 @@ public class WebUI {
         DriverManager.getDriver().navigate().refresh();
     }
 
-    @Step("Open URL: {0}")
+    @Step("Navigate to URL: {0}")
     public static void openURL(String url) {
         DriverManager.getDriver().get(url);
         waitForPageLoaded();
         sleep(getSleepTime());
-        LogUtils.info("Open URL: " + url);
+        LogUtils.info("Navigate to URL: " + url);
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
