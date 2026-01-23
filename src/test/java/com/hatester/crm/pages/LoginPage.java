@@ -17,24 +17,24 @@ public class LoginPage extends BasePage {
 
     private By errorInvalidEmailOrPassword = By.xpath("//div[@id='alerts']");
 
-    public void openCRMLoginPage() {
+    private void openCRMLoginPage() {
         WebUI.openURL(getURL());
     }
 
-    public void verifyHeaderLoginDisplayed() {
+    private void verifyHeaderLoginDisplayed() {
         Assert.assertTrue(WebUI.checkElementExist(headerLogin, 5, 500),
                 "Login header is not displayed.");
     }
 
-    public void enterEmail(String email) {
+    private void enterEmail(String email) {
         WebUI.setText(inputEmail, email);
     }
 
-    public void enterPassword(String password) {
+    private void enterPassword(String password) {
         WebUI.setText(inputPassword, password);
     }
 
-    public void clickLoginButton() {
+    private void clickLoginButton() {
         WebUI.clickElement(buttonLogin);
     }
 
