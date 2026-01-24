@@ -246,6 +246,35 @@ public class WebUI {
         return false;
     }
 
+    public static boolean isCheckboxSelected(By by) {
+        WebElement element = getWebElement(by);
+        if (element.isSelected()) {
+            LogUtils.info("Element is selected");
+            return true;
+        } else {
+            LogUtils.info("Element is not selected");
+            return false;
+        }
+    }
+
+    public static void setSliderValue(By hiddenInputBy, By sliderHandleBy, int percent) {
+        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
+
+        WebElement hiddenInput = getWebElement(hiddenInputBy);
+        WebElement sliderHandle = getWebElement(sliderHandleBy);
+
+        js.executeScript(
+                "arguments[0].value = arguments[2];" +
+                        "arguments[1].style.left = arguments[2] + '%';" +
+                        "arguments[0].dispatchEvent(new Event('change'));",
+                hiddenInput,
+                sliderHandle,
+                percent
+        );
+
+        LogUtils.info("Set slider value to " + percent + "%");
+    }
+
     public static WebElement getWebElement(By by) {
         return DriverManager.getDriver().findElement(by);
     }
