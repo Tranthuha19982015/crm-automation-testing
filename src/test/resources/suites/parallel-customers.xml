@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Customers - Parallel" verbose="1">
+    <test name="Add New Customer">
+        <classes>
+            <class name="com.hatester.crm.testcases.CustomerTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Master Suite" verbose="1">
+
+<!--    <listeners>-->
+<!--        <listener class-name="com.hatester.listeners.TestListener"/>-->
+<!--    </listeners>-->
+
+    <suite-files>
+        <suite-file path="parallel-login.xml" />
+        <suite-file path="parallel-customers.xml" />
+        <suite-file path="parallel-projects.xml"/>
+    </suite-files>
+
+</suite>
