@@ -257,24 +257,6 @@ public class WebUI {
         }
     }
 
-    public static void setSliderValue(By hiddenInputBy, By sliderHandleBy, int percent) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-
-        WebElement hiddenInput = getWebElement(hiddenInputBy);
-        WebElement sliderHandle = getWebElement(sliderHandleBy);
-
-        js.executeScript(
-                "arguments[0].value = arguments[2];" +
-                        "arguments[1].style.left = arguments[2] + '%';" +
-                        "arguments[0].dispatchEvent(new Event('change'));",
-                hiddenInput,
-                sliderHandle,
-                percent
-        );
-
-        LogUtils.info("Set slider value to " + percent + "%");
-    }
-
     public static WebElement getWebElement(By by) {
         return DriverManager.getDriver().findElement(by);
     }
@@ -321,11 +303,11 @@ public class WebUI {
         }
     }
 
-    @Step("Click on element: {0} with timeout: {1} seconds")
+    @Step("Click on element {0} with timeout {1} seconds")
     public static void clickElement(By by, int seconds) {
         sleep(getSleepTime());
         waitForElementToBeClickable(by, seconds).click();
-        LogUtils.info("Click on element " + by + "with: " + seconds + "(s)");
+        LogUtils.info("Click on element " + by + "with " + seconds + "(s)");
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
@@ -341,17 +323,17 @@ public class WebUI {
         }
     }
 
-    @Step("Clear text of element: {0} with timeout: {1} seconds")
+    @Step("Clear text of element {0} with timeout {1} seconds")
     public static void clearElementText(By by, int seconds) {
         sleep(getSleepTime());
         waitForElementVisible(by).clear();
-        LogUtils.info("Clear text of element: " + by + "with: " + seconds + "(s)");
+        LogUtils.info("Clear text of element " + by + "with " + seconds + "(s)");
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
-    @Step("Set text: {1} on element: {0}")
+    @Step("Set text {1} on element {0}")
     public static void setText(By by, String text) {
         sleep(getSleepTime());
         waitForElementVisible(by).sendKeys(text);
@@ -361,11 +343,11 @@ public class WebUI {
         }
     }
 
-    @Step("Set text: {1} on element: {0} with timeout: {2} seconds")
+    @Step("Set text {1} on element {0} with timeout {2} seconds")
     public static void setText(By by, String text, int seconds) {
         sleep(getSleepTime());
         waitForElementVisible(by, seconds).sendKeys(text);
-        LogUtils.info("Set text " + text + " on element " + by + "with: " + seconds + "(s)");
+        LogUtils.info("Set text " + text + " on element " + by + "with " + seconds + "(s)");
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
@@ -380,7 +362,7 @@ public class WebUI {
         }
     }
 
-    @Step("Set key on element: {0}")
+    @Step("Set key on element: {0} with timeout {2} seconds")
     public static void setKey(By by, Keys key, int seconds) {
         waitForElementVisible(by).sendKeys(key);
         LogUtils.info("Set key on element: " + by + "with: " + seconds + "(s)");
@@ -389,21 +371,21 @@ public class WebUI {
         }
     }
 
-    @Step("Set text and key: {1} on element: {0} ")
+    @Step("Set text and key {1} on element {0} ")
     public static void setTextAndKey(By by, String text, Keys key) {
         waitForPageLoaded();
         getWebElement(by).sendKeys(text, key);
-        LogUtils.info("Set text and key: " + text + " on element " + by);
+        LogUtils.info("Set text and key " + text + " on element " + by);
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
     }
 
-    @Step("Set text and key: {1} on element: {0} with timeout: {3} seconds")
+    @Step("Set text and key {1} on element {0} with timeout {3} seconds")
     public static void setTextAndKey(By by, String text, Keys key, int seconds) {
         waitForPageLoaded();
         getWebElement(by).sendKeys(text, key);
-        LogUtils.info("Set text and key: " + text + " on element " + by + "with: " + seconds + "(s)");
+        LogUtils.info("Set text and key " + text + " on element " + by + "with " + seconds + "(s)");
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
@@ -423,10 +405,10 @@ public class WebUI {
         return text;
     }
 
-    @Step("Get attribute: {1} of element: {0}")
+    @Step("Get attribute {1} of element {0}")
     public static String getElementAttribute(By by, String attributeName) {
         waitForElementVisible(by);
-        LogUtils.info("Get attribute of element " + by);
+        LogUtils.info("Get attribute of element: " + by);
         String value = getWebElement(by).getAttribute(attributeName);
         LogUtils.info("==> Attribute value: " + value);
         if (isScreenshotAllSteps()) {
@@ -436,7 +418,7 @@ public class WebUI {
         return value;
     }
 
-    @Step("Get CSS value: {1} of element: {0}")
+    @Step("Get CSS value {1} of element {0}")
     public static String getElementCssValue(By by, String cssPropertyName) {
         waitForElementVisible(by);
         LogUtils.info("Get CSS value " + cssPropertyName + " of element " + by);
@@ -482,6 +464,29 @@ public class WebUI {
     public static void scrollToPosition(int X, int Y) {
         JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
         js.executeScript("window.scrollTo(" + X + "," + Y + ");");
+    }
+
+    @Step("Set slider value to: {2)%")
+    public static void setSliderValue(By hiddenInputBy, By sliderHandleBy, int percent) {
+        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
+
+        WebElement hiddenInput = getWebElement(hiddenInputBy);
+        WebElement sliderHandle = getWebElement(sliderHandleBy);
+
+        js.executeScript(
+                "arguments[0].value = arguments[2];" +
+                        "arguments[1].style.left = arguments[2] + '%';" +
+                        "arguments[0].dispatchEvent(new Event('change'));",
+                hiddenInput,
+                sliderHandle,
+                percent
+        );
+
+        LogUtils.info("Set slider value to: " + percent + "%");
+        if (isScreenshotAllSteps()) {
+            AllureManager.saveScreenshotPNG();
+        }
+        AllureManager.saveTextLog("Set slider value to: " + percent + "%");
     }
 
     public static boolean moveToElement(By by) {
