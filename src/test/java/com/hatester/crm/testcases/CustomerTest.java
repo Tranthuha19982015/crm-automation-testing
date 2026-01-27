@@ -22,24 +22,16 @@ public class CustomerTest extends BaseTest {
 
     @Test(dataProvider = "addCustomerData", dataProviderClass = DataProviderFactory.class)
     public void testAddCustomer(CustomerDTO customerDTO) {
-        TestContext.setCustomer(customerDTO);
-
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
-        customerPage = dashboardPage.goToCustomersFromMenu();
 
+        customerPage = dashboardPage.goToCustomersFromMenu();
         customerPage.verifyHeaderCustomersSummaryIsDisplayed();
         customerPage.clickButtonNewCustomer();
         customerPage.verifyCustomerDetailsTabIsActive();
-        customerPage.fillData(TestContext.getCustomer());
-        customerPage.clickButtonSave();
-
-        String key = "customer" + System.currentTimeMillis();
-        RuntimeDataHelper.set(key, TestContext.getCustomer().getCompany());
-        RuntimeDataHelper.set("latestCustomer", key);
-
+        customerPage.addCustomer(customerDTO);
         customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomer(TestContext.getCustomer().getCompany());
-        customerPage.verifyCustomerIsAddedSuccessfully(TestContext.getCustomer().getCompany());
+        customerPage.searchCustomer(customerDTO.getCompany());
+        customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
     }
 }

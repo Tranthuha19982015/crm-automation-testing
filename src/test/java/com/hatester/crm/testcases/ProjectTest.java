@@ -3,11 +3,13 @@ package com.hatester.crm.testcases;
 import com.hatester.commons.BaseTest;
 import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.models.ProjectDTO;
+import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.crm.pages.ProjectPage;
 import com.hatester.crm.testcontext.TestContext;
 import com.hatester.dataproviders.DataProviderFactory;
+import com.hatester.enums.ProjectEnum;
 import com.hatester.helpers.RuntimeDataHelper;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -18,27 +20,64 @@ import org.testng.annotations.Test;
 public class ProjectTest extends BaseTest {
     private LoginPage loginPage;
     private DashboardPage dashboardPage;
+    private CustomerPage customerPage;
     private ProjectPage projectPage;
 
     @Test(dataProvider = "addProjectData", dataProviderClass = DataProviderFactory.class)
-    public void testAddProject(ProjectDTO projectDTO) {
-        TestContext.setProject(projectDTO);
-
+    public void testAddProject(CustomerDTO customerDTO, ProjectDTO projectDTO) {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
-        projectPage = dashboardPage.goToProjectsFromMenu();
 
+        //Add Customer
+        customerPage = dashboardPage.goToCustomersFromMenu();
+        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
+        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomerDetailsTabIsActive();
+        String customerName = customerPage.addCustomer(customerDTO);
+        customerPage.goToCustomersFromMenu();
+
+        customerPage.searchCustomer(customerDTO.getCompany());
+        customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
+
+        //Add project
+        projectPage = customerPage.goToProjectsFromMenu();
         projectPage.verifyHeaderProjectsSummaryDisplayed();
         projectPage.clickButtonAddProject();
         projectPage.verifyHeaderAddNewProjectDisplayed();
 
-        String valueLastKey = RuntimeDataHelper.get("latestCustomer");
-        String customerName = RuntimeDataHelper.get(valueLastKey);
+        projectPage.addProject(projectDTO, customerName, ProjectEnum.ADD);
 
-        projectPage.fillData(TestContext.getProject(), customerName);
-        projectPage.clickButtonSave();
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProject(TestContext.getProject().getProjectName());
-        projectPage.verifyProjectIsAddedSuccessfully(TestContext.getProject().getProjectName());
+        projectPage.searchProject(projectDTO.getProjectName());
+        projectPage.verifyProjectIsAddedSuccessfully(projectDTO.getProjectName());
+    }
+
+    @Test(dataProvider = "addProjectData", dataProviderClass = DataProviderFactory.class)
+    public void testEditProject(CustomerDTO customerDTO, ProjectDTO projectDTO) {
+        loginPage = new LoginPage();
+        dashboardPage = loginPage.login();
+
+        //Add Customer
+        customerPage = dashboardPage.goToCustomersFromMenu();
+        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
+        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomerDetailsTabIsActive();
+        String customerName = customerPage.addCustomer(customerDTO);
+        customerPage.goToCustomersFromMenu();
+
+        customerPage.searchCustomer(customerDTO.getCompany());
+        customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
+
+        //Add project
+        projectPage = customerPage.goToProjectsFromMenu();
+        projectPage.verifyHeaderProjectsSummaryDisplayed();
+        projectPage.clickButtonAddProject();
+        projectPage.verifyHeaderAddNewProjectDisplayed();
+
+        projectPage.addProject(projectDTO, customerName, ProjectEnum.ADD);
+
+        projectPage.goToProjectsFromMenu();
+        projectPage.searchProject(projectDTO.getProjectName());
+        projectPage.verifyProjectIsAddedSuccessfully(projectDTO.getProjectName());
     }
 }

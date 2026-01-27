@@ -1,11 +1,12 @@
 package com.hatester.crm.pages;
 
 import com.hatester.commons.BasePage;
-import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.models.ProjectDTO;
+import com.hatester.enums.ProjectEnum;
 import com.hatester.keywords.WebUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 
 import java.util.List;
@@ -92,6 +93,7 @@ public class ProjectPage extends BasePage {
     private By inputStartDate = By.xpath("//input[@id='start_date']");
     private By inputDeadline = By.xpath("//input[@id='deadline']");
     private By inputTags = By.xpath("(//input[@id='tags']/following-sibling::ul)//input");
+    private By iconCloseTag = By.xpath("(//input[@id='tags']/following-sibling::ul)//span[text()='×']");
 
     // iframe description
     private By iframeDescription = By.xpath("//iframe[@id='description_ifr']");
@@ -125,8 +127,37 @@ public class ProjectPage extends BasePage {
         }
     }
 
-    public void fillData(ProjectDTO projectDTO, String customer) {
-        WebUI.setText(inputProjectName, projectDTO.getProjectName());
+    public void closeTags() {
+        List<WebElement> tags = WebUI.getWebElements(iconCloseTag);
+        for (WebElement tag : tags) {
+            tag.click();
+        }
+    }
+
+    public void clearData() {
+        String attributeBillingType = WebUI.getElementAttribute(dropdownBillingType, "title");
+        if (attributeBillingType.equals("Fixed Rate")) {
+            WebUI.clearElementText(inputTotalRate);
+        } else if (attributeBillingType.equals("Project Hours")) {
+            WebUI.clearElementText(inputRatePerHour);
+        }
+
+        WebUI.clearElementText(inputEstimatedHours);
+        WebUI.clearElementText(inputStartDate);
+        WebUI.clearElementText(inputDeadline);
+        closeTags();
+        WebUI.clearElementText(descriptionEditor);
+    }
+
+    public void fillData(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+
+        if (type.equals(ProjectEnum.ADD)) {
+            WebUI.setText(inputProjectName, projectDTO.getProjectName());
+        }
+
+        if (type.equals(ProjectEnum.EDIT)) {
+            clearData();
+        }
 
         WebUI.clickElement(dropdownCustomer);
         WebUI.setText(inputSearchCustomer, customer);
@@ -148,9 +179,7 @@ public class ProjectPage extends BasePage {
         WebUI.clickElement(dropdownStatus);
         WebUI.clickElement(selectDropdownStatus(projectDTO.getStatus()));
 
-        if (projectDTO.getStatus().equals("Finished")
-                && projectDTO.isCheckboxSendFinished()
-                && !WebUI.isCheckboxSelected(checkboxSendFinished)) {
+        if (projectDTO.getStatus().equals("Finished") && projectDTO.isCheckboxSendFinished() && !WebUI.isCheckboxSelected(checkboxSendFinished)) {
             WebUI.clickElement(labelCheckboxSendFinished);
         }
 
@@ -186,13 +215,20 @@ public class ProjectPage extends BasePage {
         WebUI.clickElement(buttonSave);
     }
 
+    public String addProject(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+        fillData(projectDTO, customer, type);
+        clickButtonSave();
+
+        return projectDTO.getProjectName();
+    }
+
     public void searchProject(String projectName) {
         WebUI.clickElement(inputSearchProjects);
         WebUI.setText(inputSearchProjects, projectName);
     }
 
     public void verifyProjectIsAddedSuccessfully(String projectName) {
-        Assert.assertTrue(WebUI.checkElementExist(firstRowItemProject(projectName),10,500),
+        Assert.assertTrue(WebUI.checkElementExist(firstRowItemProject(projectName), 10, 500),
                 "Project is not added successfully.");
     }
 }

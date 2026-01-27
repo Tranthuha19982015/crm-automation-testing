@@ -96,7 +96,7 @@ public class CustomerPage extends BasePage {
         Assert.assertTrue(WebUI.checkElementExist(tabCustomerDetails, 5, 500), "Customer Details tab is not active.");
     }
 
-    public void fillData(CustomerDTO customerDTO) {
+    private void fillData(CustomerDTO customerDTO) {
         WebUI.setText(inputCompany, customerDTO.getCompany());
         WebUI.setText(inputVatNumber, customerDTO.getVatNumber());
         WebUI.setText(inputPhone, customerDTO.getPhone());
@@ -124,8 +124,15 @@ public class CustomerPage extends BasePage {
         WebUI.clickElement(valueCountry(customerDTO.getCountry()));
     }
 
-    public void clickButtonSave() {
+    private void clickButtonSave() {
         WebUI.clickElement(buttonSave);
+    }
+
+    public String addCustomer(CustomerDTO customerDTO) {
+        fillData(customerDTO);
+        clickButtonSave();
+
+        return customerDTO.getCompany();
     }
 
     public void searchCustomer(String company) {

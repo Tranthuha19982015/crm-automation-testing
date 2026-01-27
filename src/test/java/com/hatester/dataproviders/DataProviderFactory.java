@@ -58,7 +58,7 @@ public class DataProviderFactory {
 
     //-------------------------------CUSTOMERS DATA------------------------------------------
 
-    @DataProvider(name = "addCustomerData")
+    @DataProvider(name = "addCustomerData", parallel = true)
     public Object[][] addCustomer() {
         ExcelHelper excel = new ExcelHelper();
         Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 2);
@@ -78,13 +78,53 @@ public class DataProviderFactory {
     @DataProvider(name = "addProjectData")
     public Object[][] addProject() {
         ExcelHelper excel = new ExcelHelper();
-        Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, 1, 1);
 
-        Object[][] finalData = new Object[excelDataMap.length][1];
-        for (int i = 0; i < excelDataMap.length; i++) {
-            Map<String, String> map = (Map<String, String>) excelDataMap[i][0];
-            ProjectDTO projectDTO = ProjectMapper.projectMapper(map);
-            finalData[i][0] = projectDTO;
+        int startRow = 1;
+        int endRow = 1;
+
+        Object[][] customerMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, startRow, endRow);
+        Object[][] projectMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, startRow, endRow);
+
+        int totalCustomerRows = customerMap.length;
+
+        Object[][] finalData = new Object[totalCustomerRows][2];
+
+        for (int i = 0; i < totalCustomerRows; i++) {
+            Map<String, String> customerRow = (Map<String, String>) customerMap[i][0];
+            Map<String, String> projectRow = (Map<String, String>) projectMap[i][0];
+
+            CustomerDTO customerDTO = CustomerMapper.customerMapper(customerRow);
+            ProjectDTO projectDTO = ProjectMapper.projectMapper(projectRow);
+
+            finalData[i][0] = customerDTO;
+            finalData[i][1] = projectDTO;
+        }
+        return finalData;
+    }
+
+    @DataProvider(name = "editProjectData")
+    public Object[][] editProject() {
+        ExcelHelper excel = new ExcelHelper();
+        Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, 1, 4);
+
+        int totalRow = excelDataMap.length;
+        int totalTestcase = totalRow / 2;
+
+        Object[][] finalData = new Object[totalTestcase][2];
+
+        int indexTCs = 0;
+
+        for (int i = 0; i < totalRow; i += 2) {
+            Map<String, String> addMap = (Map<String, String>) excelDataMap[i][0];
+            Map<String, String> editMap = (Map<String, String>) excelDataMap[i + 1][0];
+
+            ProjectDTO addProject = ProjectMapper.projectMapper(addMap);
+            ProjectDTO editProject = ProjectMapper.projectMapper(editMap);
+
+            finalData[indexTCs][0] = addProject;
+            finalData[indexTCs][1] = editProject;
+
+            indexTCs++;
         }
         return finalData;
     }
