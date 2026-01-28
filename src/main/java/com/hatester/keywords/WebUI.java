@@ -4,6 +4,7 @@ import com.hatester.drivers.DriverManager;
 import com.hatester.reports.AllureManager;
 import com.hatester.utils.LogUtils;
 import io.qameta.allure.Step;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -16,6 +17,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.hatester.config.FrameworkConfig.*;
 
@@ -262,7 +264,6 @@ public class WebUI {
     }
 
     public static List<WebElement> getWebElements(By by) {
-        waitForElementVisible(by);
         return DriverManager.getDriver().findElements(by);
     }
 
@@ -492,7 +493,7 @@ public class WebUI {
     public static boolean moveToElement(By by) {
         try {
             Actions action = new Actions(DriverManager.getDriver());
-            action.moveToElement(getWebElement(by)).perform();
+            action.moveToElement(getWebElement(by)).release().build().perform();
             return true;
         } catch (Exception e) {
             LogUtils.info(e.getMessage());
@@ -572,6 +573,15 @@ public class WebUI {
         } catch (Exception e) {
             LogUtils.info(e.getMessage());
             return false;
+        }
+    }
+
+    public static void sendTextByAction(By by, String text) {
+        try {
+            Actions action = new Actions(DriverManager.getDriver());
+            action.click(getWebElement(by)).sendKeys(Keys.END).sendKeys(text).build().perform();
+        } catch (Exception e) {
+            LogUtils.info(e.getMessage());
         }
     }
 
@@ -661,5 +671,146 @@ public class WebUI {
         AllureManager.saveTextLog("Assert contains: " + actual + " and " + expected);
         boolean check = actual.contains(expected);
         Assert.assertTrue(check, message);
+    }
+
+    //handle element
+    public static void setTextIfChanged(By by, String expected) {
+        // Excel không có cột thì bỏ qua trường này
+        if (expected == null) {
+            return;
+        }
+
+        String actual = getElementText(by);
+
+        // Excel có cột nhưng ô để trống → clear
+        if (expected.isEmpty()) {
+            if (!actual.isEmpty()) {
+                clearElementText(by);
+            }
+            return;
+        }
+
+        if (expected.equals(actual)) {
+            return;
+        }
+
+        clearElementText(by);
+        setText(by, expected);
+    }
+
+    public static void selectDropdownIfChanged(By dropdown, String expected, String attribute, By optionDropdown) {
+        if (StringUtils.isBlank(expected)) {
+            return;
+        }
+
+        String actual = getElementAttribute(dropdown, attribute);
+        if (expected.equals(actual)) {
+            return;
+        }
+
+        clickElement(dropdown);
+        clickElement(optionDropdown);
+    }
+
+    public static void selectSearchableDropdownIfChanged(By dropdown, String expected, String attribute, By inputSearchDropdown, By optionDropdown) {
+        if (StringUtils.isBlank(expected)) {
+            return;
+        }
+
+        String actual = getElementAttribute(dropdown, attribute);
+        if (expected.equals(actual)) {
+            return;
+        }
+
+        clickElement(dropdown);
+        setText(inputSearchDropdown, expected);
+        sendTextByAction(inputSearchDropdown, " ");
+        clickElement(optionDropdown);
+    }
+
+    //Consumer<t> là một functional interface để truyền hành động vào hàm
+    //Consumer<String> là một hàm nhận vào String và không trả về giá trị
+    public static void selectMultiDropdownIfChanged(By dropdown, List<String> expected, By buttonClearSelection, Consumer<String> selectOption) {
+        if (expected == null) {
+            return;
+        }
+
+        clickElement(dropdown);
+        clickElement(buttonClearSelection);
+
+        if (expected.isEmpty()) {
+            clickElement(dropdown);
+            return;
+        }
+
+        for (String value : expected) {
+            selectOption.accept(value);  //consumer.accept(t): gọi hành động được truyền vào hàm với tham số t
+        }
+
+        clickElement(dropdown);
+    }
+
+    //Multi-value input dạng chip / token / pill  (VD: tags, labels,...)
+    public static void setMultiChipInput(By input, List<String> expected, By chipRemoveIcon, By blurTarget) {
+        // 1. Excel không có cột cần thao tác → bỏ qua
+        if (expected == null) {
+            return;
+        }
+
+        // 2. Xoá toàn bộ thẻ hiện tại trên UI (nếu có)
+        List<WebElement> listRemoveIcon = getWebElements(chipRemoveIcon);
+        while (!listRemoveIcon.isEmpty()) {
+            listRemoveIcon.get(0).click();
+            listRemoveIcon = getWebElements(chipRemoveIcon);
+        }
+
+        // 3. Excel có cột cần thao tác nhưng ô để trống → chỉ xoá, không add
+        if (expected.isEmpty()) {
+            return;
+        }
+
+        // 4. Add lại thẻ theo Excel
+        for (String member : expected) {
+            setTextAndKey(input, member, Keys.ENTER);
+        }
+
+        clickElement(blurTarget);
+    }
+
+    public static void setTextInIframeIfChanged(By iframe, By iframeEditor, String expected) {
+        if (expected == null) {
+            return;
+        }
+
+        switchToFrame(iframe);
+
+        try {
+            String actual = getElementText(iframeEditor);
+
+            if (expected.isEmpty()) {
+                if (!actual.isEmpty()) {
+                    clearElementText(iframeEditor);
+                }
+                return;
+            }
+
+            if (expected.equals(actual)) {
+                return;
+            }
+
+            clearElementText(iframeEditor);
+            setText(iframeEditor, expected);
+        } finally {
+            switchToDefaultContent();
+        }
+    }
+
+    public static void setCheckboxIfChanged(By checkbox, boolean expected, By label) {
+        boolean actual = isCheckboxSelected(checkbox);
+        if (actual == expected) {
+            return;
+        }
+
+        clickElement(label);
     }
 }
