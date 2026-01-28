@@ -1,12 +1,11 @@
 package com.hatester.utils;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DataUtils {
+public class DataUtil {
     public static List<String> parseList(String rawData) {
         //Nếu truyền vào String rỗng/null thì trả ra List rỗng
         if (rawData == null || rawData.isEmpty()) {
