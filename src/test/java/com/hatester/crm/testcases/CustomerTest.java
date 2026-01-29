@@ -6,7 +6,6 @@ import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.dataproviders.DataProviderFactory;
-import com.hatester.helpers.RuntimeDataHelper;
 import com.hatester.helpers.SystemHelper;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
