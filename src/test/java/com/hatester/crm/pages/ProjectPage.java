@@ -7,10 +7,8 @@ import com.hatester.keywords.WebUI;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ProjectPage extends BasePage {
@@ -247,7 +245,7 @@ public class ProjectPage extends BasePage {
         WebUI.clickElement(buttonSave);
     }
 
-    public String addProject(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+    public String saveProject(ProjectDTO projectDTO, String customer, ProjectEnum type) {
         fillData(projectDTO, customer, type);
         clickButtonSave();
 
