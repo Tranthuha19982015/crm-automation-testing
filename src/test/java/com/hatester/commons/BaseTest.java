@@ -1,6 +1,5 @@
 package com.hatester.commons;
 
-import com.hatester.crm.testcontext.TestContext;
 import com.hatester.drivers.DriverManager;
 import com.hatester.helpers.PropertiesHelper;
 import com.hatester.listeners.TestListener;
@@ -82,6 +81,5 @@ public class BaseTest {
         if (DriverManager.getDriver() != null) {
             DriverManager.quitDriver();
         }
-        TestContext.clear();
     }
 }

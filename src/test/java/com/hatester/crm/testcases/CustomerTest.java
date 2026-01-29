@@ -5,7 +5,6 @@ import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
-import com.hatester.crm.testcontext.TestContext;
 import com.hatester.dataproviders.DataProviderFactory;
 import com.hatester.helpers.RuntimeDataHelper;
 import com.hatester.helpers.SystemHelper;
