@@ -132,7 +132,7 @@ public class ProjectPage extends BasePage {
             return;
         }
 
-        WebUI.setTextIfChanged(inputProjectName, dto.getProjectName());
+        WebUI.setTextIfChanged(inputProjectName, dto.getProjectName(), "value");
     }
 
     private void selectCustomer(String customer) {
@@ -184,17 +184,17 @@ public class ProjectPage extends BasePage {
         }
 
         if ("Fixed Rate".equals(billingType)) {
-            WebUI.setTextIfChanged(inputTotalRate, dto.getTotalRate());
+            WebUI.setTextIfChanged(inputTotalRate, dto.getTotalRate(), "value");
             return;
         }
 
         if ("Project Hours".equals(billingType)) {
-            WebUI.setTextIfChanged(inputRatePerHour, dto.getRatePerHour());
+            WebUI.setTextIfChanged(inputRatePerHour, dto.getRatePerHour(),"value");
         }
     }
 
     private void handleEstimatedHours(ProjectDTO dto) {
-        WebUI.setTextIfChanged(inputEstimatedHours, dto.getEstimatedHour());
+        WebUI.setTextIfChanged(inputEstimatedHours, dto.getEstimatedHour(),"value");
     }
 
     private void handleMembers(ProjectDTO dto) {
@@ -203,12 +203,12 @@ public class ProjectPage extends BasePage {
     }
 
     private void handleStartDate(ProjectDTO dto) {
-        WebUI.setTextIfChanged(inputStartDate, dto.getStartDate());
+        WebUI.setTextIfChanged(inputStartDate, dto.getStartDate(),"value");
         WebUI.clickElement(inputStartDate);
     }
 
     private void handleDeadline(ProjectDTO dto) {
-        WebUI.setTextIfChanged(inputDeadline, dto.getDeadline());
+        WebUI.setTextIfChanged(inputDeadline, dto.getDeadline(),"value");
         WebUI.clickElement(inputDeadline);
     }
 

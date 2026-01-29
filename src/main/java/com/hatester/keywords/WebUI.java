@@ -674,13 +674,13 @@ public class WebUI {
     }
 
     //handle element
-    public static void setTextIfChanged(By by, String expected) {
+    public static void setTextIfChanged(By by, String expected, String attribute) {
         // Excel không có cột thì bỏ qua trường này
         if (expected == null) {
             return;
         }
 
-        String actual = getElementText(by);
+        String actual = getElementAttribute(by, attribute);
 
         // Excel có cột nhưng ô để trống → clear
         if (expected.isEmpty()) {
