@@ -4,12 +4,14 @@ import com.hatester.commons.BasePage;
 import com.hatester.crm.models.ProjectDTO;
 import com.hatester.enums.ProjectEnum;
 import com.hatester.keywords.WebUI;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ProjectPage extends BasePage {
     //projects list page
@@ -18,22 +20,23 @@ public class ProjectPage extends BasePage {
     private By inputSearchProjects = By.xpath("//div[@id='projects_filter']//input[@aria-controls='projects']");
 
     private By firstRowItemProject(String projectName) {
-        By xpathProject = By.xpath("//table[@id='projects']//a[text()='" + projectName + "']");
+        By xpathProject = By.xpath("//table[@id='projects']//a[normalize-space()='" + projectName + "']");
         return xpathProject;
     }
 
-    private By buttonEdit(String projectName) {
-        By xpathButtonEdit = By.xpath("(//table[@id='projects']//a[text()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Edit']");
+    private By buttonEditProject(String projectName) {
+        By xpathButtonEdit = By.xpath("(//table[@id='projects']//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Edit']");
         return xpathButtonEdit;
     }
 
-    private By buttonDelete(String projectName) {
-        By xpathButtonDelete = By.xpath("(//table[@id='projects']//a[text()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Delete']");
+    private By buttonDeleteProject(String projectName) {
+        By xpathButtonDelete = By.xpath("(//table[@id='projects']//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Delete']");
         return xpathButtonDelete;
     }
 
-    //Add new project page
+    //Add/edit project page
     private By headerAddNewProject = By.xpath("//h4[normalize-space()='Add new project']");
+    private By headerEditProject = By.xpath("//h4[normalize-space()='Edit Project']");
 
     //project name
     private By inputProjectName = By.xpath("//input[@id='name']");
@@ -89,9 +92,14 @@ public class ProjectPage extends BasePage {
         return xpathMember;
     }
 
+    private By buttonDeleteAllMembers = By.xpath("(//button[contains(@data-id,'project_members')]/following-sibling::div)/descendant::button[text()='Deselect All']");
+
     // input
     private By inputStartDate = By.xpath("//input[@id='start_date']");
     private By inputDeadline = By.xpath("//input[@id='deadline']");
+
+    //tags
+    private By labelTags = By.xpath("//label[@for='tags']");
     private By inputTags = By.xpath("(//input[@id='tags']/following-sibling::ul)//input");
     private By iconCloseTag = By.xpath("(//input[@id='tags']/following-sibling::ul)//span[text()='×']");
 
@@ -121,94 +129,118 @@ public class ProjectPage extends BasePage {
                 "The Add New Project header is not displayed.");
     }
 
-    public void selectMembers(List<String> members) {
-        for (String member : members) {
-            WebUI.clickElement(selectDropdownMembers(member));
+    private void handleProjectName(ProjectDTO dto, ProjectEnum type) {
+        if (type == ProjectEnum.EDIT && !dto.isUpdateProjectName()) {
+            return;
+        }
+
+        WebUI.setTextIfChanged(inputProjectName, dto.getProjectName());
+    }
+
+    private void selectCustomer(String customer) {
+        WebUI.selectSearchableDropdownIfChanged(dropdownCustomer, customer, "title", inputSearchCustomer, selectDropdownCustomer(customer));
+    }
+
+    private void handleCalculateProgress(ProjectDTO dto) {
+        boolean expected = dto.isCheckboxCalculateProgress();  //mặc định = false dù excel có rỗng hoặc không có cột này
+        WebUI.setCheckboxIfChanged(checkboxCalculateProgress, expected, labelCheckboxCalculateProgress);
+
+        //set progress khi checkbox OFF (không tích)
+        if (!expected) {
+            String progress = dto.getProgress();
+            if (StringUtils.isBlank(progress)) {
+                return;
+            }
+
+            WebUI.setSliderValue(inputHiddenProgress, sliderProgress, Integer.parseInt(progress));
         }
     }
 
-    public void closeTags() {
-        List<WebElement> tags = WebUI.getWebElements(iconCloseTag);
-        for (WebElement tag : tags) {
-            tag.click();
+    private void handleBillingType(ProjectDTO dto) {
+        String dtoBillingType = dto.getBillingType();
+        WebUI.selectDropdownIfChanged(dropdownBillingType, dtoBillingType, "title", selectDropdownBillingType(dtoBillingType));
+    }
+
+    private void handleStatus(ProjectDTO dto) {
+        String dtoStatus = dto.getStatus();
+        WebUI.selectDropdownIfChanged(dropdownStatus, dtoStatus, "title", selectDropdownStatus(dtoStatus));
+    }
+
+    private void handleCheckboxSendFinished(ProjectDTO dto) {
+        String expected = dto.getStatus();
+        if (StringUtils.isBlank(expected)) {
+            return;
+        }
+
+        if (!"Finished".equals(expected)) {
+            return;
+        }
+
+        WebUI.setCheckboxIfChanged(checkboxSendFinished, dto.isCheckboxSendFinished(), labelCheckboxSendFinished);
+    }
+
+    private void handleBillingRate(ProjectDTO dto) {
+        String billingType = dto.getBillingType();
+        if (StringUtils.isBlank(billingType)) {
+            return;
+        }
+
+        if ("Fixed Rate".equals(billingType)) {
+            WebUI.setTextIfChanged(inputTotalRate, dto.getTotalRate());
+            return;
+        }
+
+        if ("Project Hours".equals(billingType)) {
+            WebUI.setTextIfChanged(inputRatePerHour, dto.getRatePerHour());
         }
     }
 
-    public void clearData() {
-        String attributeBillingType = WebUI.getElementAttribute(dropdownBillingType, "title");
-        if (attributeBillingType.equals("Fixed Rate")) {
-            WebUI.clearElementText(inputTotalRate);
-        } else if (attributeBillingType.equals("Project Hours")) {
-            WebUI.clearElementText(inputRatePerHour);
-        }
-
-        WebUI.clearElementText(inputEstimatedHours);
-        WebUI.clearElementText(inputStartDate);
-        WebUI.clearElementText(inputDeadline);
-        closeTags();
-        WebUI.clearElementText(descriptionEditor);
+    private void handleEstimatedHours(ProjectDTO dto) {
+        WebUI.setTextIfChanged(inputEstimatedHours, dto.getEstimatedHour());
     }
 
-    public void fillData(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+    private void handleMembers(ProjectDTO dto) {
+        Consumer<String> selectMember = member -> WebUI.clickElement(selectDropdownMembers(member));
+        WebUI.selectMultiDropdownIfChanged(dropdownMembers, dto.getMembers(), buttonDeleteAllMembers, selectMember);
+    }
 
-        if (type.equals(ProjectEnum.ADD)) {
-            WebUI.setText(inputProjectName, projectDTO.getProjectName());
-        }
+    private void handleStartDate(ProjectDTO dto) {
+        WebUI.setTextIfChanged(inputStartDate, dto.getStartDate());
+        WebUI.clickElement(inputStartDate);
+    }
 
-        if (type.equals(ProjectEnum.EDIT)) {
-            clearData();
-        }
+    private void handleDeadline(ProjectDTO dto) {
+        WebUI.setTextIfChanged(inputDeadline, dto.getDeadline());
+        WebUI.clickElement(inputDeadline);
+    }
 
-        WebUI.clickElement(dropdownCustomer);
-        WebUI.setText(inputSearchCustomer, customer);
-        WebUI.clickElement(selectDropdownCustomer(customer));
+    private void handleTags(ProjectDTO dto) {
+        WebUI.setMultiChipInput(inputTags, dto.getTags(), iconCloseTag, labelTags);
+    }
 
-        if (!WebUI.isCheckboxSelected(checkboxCalculateProgress) && projectDTO.isCheckboxCalculateProgress()) {
-            WebUI.clickElement(labelCheckboxCalculateProgress);
-        } else if (WebUI.isCheckboxSelected(checkboxCalculateProgress) && !projectDTO.isCheckboxCalculateProgress()) {
-            WebUI.clickElement(labelCheckboxCalculateProgress);
-        }
+    private void handleDescription(ProjectDTO dto) {
+        WebUI.setTextInIframeIfChanged(iframeDescription, descriptionEditor, dto.getDescription());
+    }
 
-        if (!WebUI.isCheckboxSelected(checkboxCalculateProgress)) {
-            WebUI.setSliderValue(inputHiddenProgress, sliderProgress, Integer.parseInt(projectDTO.getProgress()));
-        }
+    private void handleCheckboxSendCreatedEmail(ProjectDTO dto) {
+        WebUI.setCheckboxIfChanged(checkboxSendCreatedEmail, dto.isCheckboxSendCreatedMail(), labelCheckboxSendCreatedEmail);
+    }
 
-        WebUI.clickElement(dropdownBillingType);
-        WebUI.clickElement(selectDropdownBillingType(projectDTO.getBillingType()));
-
-        WebUI.clickElement(dropdownStatus);
-        WebUI.clickElement(selectDropdownStatus(projectDTO.getStatus()));
-
-        if (projectDTO.getStatus().equals("Finished") && projectDTO.isCheckboxSendFinished() && !WebUI.isCheckboxSelected(checkboxSendFinished)) {
-            WebUI.clickElement(labelCheckboxSendFinished);
-        }
-
-        if (projectDTO.getBillingType().equals("Fixed Rate")) {
-            WebUI.setText(inputTotalRate, projectDTO.getTotalRate());
-        } else if (projectDTO.getBillingType().equals("Project Hours")) {
-            WebUI.setText(inputRatePerHour, projectDTO.getRatePerHour());
-        }
-
-        WebUI.setText(inputEstimatedHours, projectDTO.getEstimatedHour());
-
-        WebUI.clickElement(dropdownMembers);
-        selectMembers(projectDTO.getMembers());
-        WebUI.clickElement(dropdownMembers);
-
-        WebUI.clearElementText(inputStartDate);
-        WebUI.setText(inputStartDate, projectDTO.getStartDate());
-        WebUI.setText(inputDeadline, projectDTO.getDeadline());
-
-        WebUI.clickElement(inputTags);
-        WebUI.setTextAndKey(inputTags, projectDTO.getTags(), Keys.ENTER);
-
-        WebUI.switchToFrame(iframeDescription);
-        WebUI.setText(descriptionEditor, projectDTO.getDescription());
-        WebUI.switchToDefaultContent();
-
-        if (!WebUI.isCheckboxSelected(checkboxSendCreatedEmail) && !projectDTO.isCheckboxSendCreatedMail()) {
-            WebUI.clickElement(labelCheckboxSendCreatedEmail);
-        }
+    public void fillData(ProjectDTO dto, String customer, ProjectEnum type) {
+        handleProjectName(dto, type);
+        selectCustomer(customer);
+        handleCalculateProgress(dto);
+        handleBillingType(dto);
+        handleStatus(dto);
+        handleCheckboxSendFinished(dto);
+        handleBillingRate(dto);
+        handleEstimatedHours(dto);
+        handleMembers(dto);
+        handleStartDate(dto);
+        handleDeadline(dto);
+        handleTags(dto);
+        handleDescription(dto);
+        handleCheckboxSendCreatedEmail(dto);
     }
 
     public void clickButtonSave() {
@@ -223,12 +255,24 @@ public class ProjectPage extends BasePage {
     }
 
     public void searchProject(String projectName) {
-        WebUI.clickElement(inputSearchProjects);
-        WebUI.setText(inputSearchProjects, projectName);
+        WebUI.waitForPageLoaded();
+        WebUI.setTextAndKey(inputSearchProjects, projectName, Keys.ENTER);
+        WebUI.sleep(1);
     }
 
     public void verifyProjectIsAddedSuccessfully(String projectName) {
         Assert.assertTrue(WebUI.checkElementExist(firstRowItemProject(projectName), 10, 500),
                 "Project is not added successfully.");
+    }
+
+    public void clickButtonEdit(String projectName) {
+        WebUI.waitForElementVisible(firstRowItemProject(projectName));
+        WebUI.moveToElement(firstRowItemProject(projectName));
+        WebUI.clickElement(buttonEditProject(projectName));
+    }
+
+    public void verifyHeaderEditProjectDisplayed() {
+        Assert.assertTrue(WebUI.checkElementExist(headerEditProject, 5, 500),
+                "The Edit Project header is not displayed.");
     }
 }

@@ -2,7 +2,7 @@ package com.hatester.crm.mappers;
 
 import com.hatester.crm.models.ProjectDTO;
 import com.hatester.helpers.SystemHelper;
-import com.hatester.utils.DataUtils;
+import com.hatester.utils.DataUtil;
 
 import java.util.Map;
 
@@ -19,12 +19,13 @@ public class ProjectMapper {
         projectDTO.setStatus(map.get("STATUS"));
         projectDTO.setCheckboxSendFinished(Boolean.parseBoolean(map.get("SEND_PROJECT_FINISHED")));
         projectDTO.setEstimatedHour(map.get("ESTIMATES_HOURS"));
-        projectDTO.setMembers(DataUtils.parseList(map.get("MEMBERS")));
+        projectDTO.setMembers(DataUtil.parseList(map.get("MEMBERS")));
         projectDTO.setStartDate(map.get("START_DATE"));
         projectDTO.setDeadline(map.get("DEADLINE"));
-        projectDTO.setTags(map.get("TAGS"));
+        projectDTO.setTags(DataUtil.parseList(map.get("TAGS")));
         projectDTO.setDescription(map.get("DESCRIPTION"));
         projectDTO.setCheckboxSendCreatedMail(Boolean.parseBoolean(map.get("SEND_CREATE_EMAIL")));
+        projectDTO.setUpdateProjectName(Boolean.parseBoolean(map.get("UPDATE_PROJECT_NAME")));
 
         return projectDTO;
     }

@@ -18,7 +18,8 @@ public class ProjectDTO {
     private List<String> members;
     private String startDate;
     private String deadline;
-    private String tags;
+    private List<String> tags;
     private String description;
     private boolean checkboxSendCreatedMail;
+    private boolean updateProjectName;
 }

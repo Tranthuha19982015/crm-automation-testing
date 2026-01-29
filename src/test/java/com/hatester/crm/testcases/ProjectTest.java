@@ -52,8 +52,8 @@ public class ProjectTest extends BaseTest {
         projectPage.verifyProjectIsAddedSuccessfully(projectDTO.getProjectName());
     }
 
-    @Test(dataProvider = "addProjectData", dataProviderClass = DataProviderFactory.class)
-    public void testEditProject(CustomerDTO customerDTO, ProjectDTO projectDTO) {
+    @Test(dataProvider = "editProjectData", dataProviderClass = DataProviderFactory.class)
+    public void testEditProject(CustomerDTO customerDTO, ProjectDTO projectAdd, ProjectDTO projectEdit) {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
 
@@ -68,16 +68,32 @@ public class ProjectTest extends BaseTest {
         customerPage.searchCustomer(customerDTO.getCompany());
         customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
 
+
         //Add project
         projectPage = customerPage.goToProjectsFromMenu();
         projectPage.verifyHeaderProjectsSummaryDisplayed();
         projectPage.clickButtonAddProject();
         projectPage.verifyHeaderAddNewProjectDisplayed();
 
-        projectPage.addProject(projectDTO, customerName, ProjectEnum.ADD);
+        String projectName = projectPage.addProject(projectAdd, customerName, ProjectEnum.ADD);
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProject(projectDTO.getProjectName());
-        projectPage.verifyProjectIsAddedSuccessfully(projectDTO.getProjectName());
+        projectPage.searchProject(projectName);
+        projectPage.verifyProjectIsAddedSuccessfully(projectName);
+
+
+        //Edit project
+        projectPage.clickButtonEdit(projectName);
+        projectPage.verifyHeaderEditProjectDisplayed();
+
+        projectPage.addProject(projectEdit, customerName, ProjectEnum.EDIT);
+
+        if (projectEdit.isUpdateProjectName()) {
+            projectName = projectEdit.getProjectName();
+        }
+
+        projectPage.goToProjectsFromMenu();
+        projectPage.searchProject(projectName);
+        projectPage.verifyProjectIsAddedSuccessfully(projectName);
     }
 }

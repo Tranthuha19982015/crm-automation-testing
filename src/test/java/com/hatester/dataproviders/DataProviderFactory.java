@@ -58,7 +58,7 @@ public class DataProviderFactory {
 
     //-------------------------------CUSTOMERS DATA------------------------------------------
 
-    @DataProvider(name = "addCustomerData", parallel = true)
+    @DataProvider(name = "addCustomerData", parallel = false)
     public Object[][] addCustomer() {
         ExcelHelper excel = new ExcelHelper();
         Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 2);
@@ -74,7 +74,7 @@ public class DataProviderFactory {
     }
 
     //-------------------------------PROJECTS DATA------------------------------------------
-
+    //TCs: (cus, add)
     @DataProvider(name = "addProjectData")
     public Object[][] addProject() {
         ExcelHelper excel = new ExcelHelper();
@@ -102,27 +102,33 @@ public class DataProviderFactory {
         return finalData;
     }
 
-    @DataProvider(name = "editProjectData")
+    //TCs 1: (cus1, add1, edit1)
+    //TCs 2: (cus1, add2, edit2)
+    @DataProvider(name = "editProjectData", parallel = false)
     public Object[][] editProject() {
         ExcelHelper excel = new ExcelHelper();
-        Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, 1, 4);
+        Object[][] customerMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 1);
+        Object[][] projectMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, 1, 4);
 
-        int totalRow = excelDataMap.length;
+        int totalRow = projectMap.length;
         int totalTestcase = totalRow / 2;
 
-        Object[][] finalData = new Object[totalTestcase][2];
+        Object[][] finalData = new Object[totalTestcase][3];
 
         int indexTCs = 0;
 
         for (int i = 0; i < totalRow; i += 2) {
-            Map<String, String> addMap = (Map<String, String>) excelDataMap[i][0];
-            Map<String, String> editMap = (Map<String, String>) excelDataMap[i + 1][0];
+            Map<String, String> customerRow = (Map<String, String>) customerMap[0][0];
+            Map<String, String> addMap = (Map<String, String>) projectMap[i][0];
+            Map<String, String> editMap = (Map<String, String>) projectMap[i + 1][0];
 
+            CustomerDTO customerDTO = CustomerMapper.customerMapper(customerRow);
             ProjectDTO addProject = ProjectMapper.projectMapper(addMap);
             ProjectDTO editProject = ProjectMapper.projectMapper(editMap);
 
-            finalData[indexTCs][0] = addProject;
-            finalData[indexTCs][1] = editProject;
+            finalData[indexTCs][0] = customerDTO;
+            finalData[indexTCs][1] = addProject;
+            finalData[indexTCs][2] = editProject;
 
             indexTCs++;
         }
