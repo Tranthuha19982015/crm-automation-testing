@@ -245,11 +245,11 @@ public class ProjectPage extends BasePage {
         WebUI.clickElement(buttonSave);
     }
 
-    public String saveProject(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+    public ProjectDTO fillAndSaveProject(ProjectDTO projectDTO, String customer, ProjectEnum type) {
         fillData(projectDTO, customer, type);
         clickButtonSave();
 
-        return projectDTO.getProjectName();
+        return projectDTO;
     }
 
     public void searchProject(String projectName) {

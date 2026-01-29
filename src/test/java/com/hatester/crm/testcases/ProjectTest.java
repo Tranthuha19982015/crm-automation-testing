@@ -7,10 +7,8 @@ import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.crm.pages.ProjectPage;
-import com.hatester.crm.testcontext.TestContext;
 import com.hatester.dataproviders.DataProviderFactory;
 import com.hatester.enums.ProjectEnum;
-import com.hatester.helpers.RuntimeDataHelper;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.testng.annotations.Test;
@@ -45,7 +43,7 @@ public class ProjectTest extends BaseTest {
         projectPage.clickButtonAddProject();
         projectPage.verifyHeaderAddNewProjectDisplayed();
 
-        projectPage.addProject(projectDTO, customerName, ProjectEnum.ADD);
+        projectPage.fillAndSaveProject(projectDTO, customerName, ProjectEnum.ADD);
 
         projectPage.goToProjectsFromMenu();
         projectPage.searchProject(projectDTO.getProjectName());
@@ -75,7 +73,8 @@ public class ProjectTest extends BaseTest {
         projectPage.clickButtonAddProject();
         projectPage.verifyHeaderAddNewProjectDisplayed();
 
-        String projectName = projectPage.addProject(projectAdd, customerName, ProjectEnum.ADD);
+        ProjectDTO project = projectPage.fillAndSaveProject(projectAdd, customerName, ProjectEnum.ADD);
+        String projectName = project.getProjectName();
 
         projectPage.goToProjectsFromMenu();
         projectPage.searchProject(projectName);
@@ -86,7 +85,7 @@ public class ProjectTest extends BaseTest {
         projectPage.clickButtonEdit(projectName);
         projectPage.verifyHeaderEditProjectDisplayed();
 
-        projectPage.addProject(projectEdit, customerName, ProjectEnum.EDIT);
+        projectPage.fillAndSaveProject(projectEdit, customerName, ProjectEnum.EDIT);
 
         if (projectEdit.isUpdateProjectName()) {
             projectName = projectEdit.getProjectName();
