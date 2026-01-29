@@ -3,14 +3,17 @@ package com.hatester.crm.mappers;
 import com.hatester.crm.models.ProjectDTO;
 import com.hatester.helpers.SystemHelper;
 import com.hatester.utils.DataUtil;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class ProjectMapper {
     public static ProjectDTO projectMapper(Map<String, String> map) {
         ProjectDTO projectDTO = new ProjectDTO();
 
-        projectDTO.setProjectName(map.get("PROJECT_NAME") + SystemHelper.getDateTimeNow() + "_" + System.currentTimeMillis());
+        projectDTO.setProjectName(map.get("PROJECT_NAME") + " " + SystemHelper.getDateTimeNow() + "_" + RandomStringUtils.randomAlphanumeric(6));
         projectDTO.setCheckboxCalculateProgress(Boolean.parseBoolean(map.get("CALCULATE_PROGRESS")));
         projectDTO.setProgress(map.get("PROGRESS"));
         projectDTO.setBillingType(map.get("BILLING_TYPE"));
