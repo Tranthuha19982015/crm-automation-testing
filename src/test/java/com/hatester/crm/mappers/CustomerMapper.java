@@ -2,6 +2,7 @@ package com.hatester.crm.mappers;
 
 import com.hatester.crm.models.CustomerDTO;
 import com.hatester.helpers.SystemHelper;
+import com.hatester.utils.TestDataUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Map;
@@ -10,7 +11,7 @@ public class CustomerMapper {
     public static CustomerDTO customerMapper(Map<String, String> map) {
         CustomerDTO customerDTO = new CustomerDTO();
 
-        customerDTO.setCompany(map.get("COMPANY") + " " + SystemHelper.getDateTimeSimple() + "_" + RandomStringUtils.randomAlphanumeric(6));
+        customerDTO.setCompany(TestDataUtil.generateUnique(map.get("COMPANY")));
         customerDTO.setVatNumber(map.get("VAT_NUMBER"));
         customerDTO.setPhone(map.get("PHONE"));
         customerDTO.setWebsite(map.get("WEBSITE"));
