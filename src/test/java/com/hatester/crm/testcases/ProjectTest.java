@@ -21,7 +21,7 @@ public class ProjectTest extends BaseTest {
     private CustomerPage customerPage;
     private ProjectPage projectPage;
 
-    @Test(dataProvider = "addProjectData", dataProviderClass = DataProviderFactory.class)
+    @Test(dataProvider = "projectBaseData", dataProviderClass = DataProviderFactory.class)
     public void testAddProject(CustomerDTO customerDTO, ProjectDTO projectDTO) {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
@@ -96,7 +96,7 @@ public class ProjectTest extends BaseTest {
         projectPage.verifyProjectDisplayedInList(projectName);
     }
 
-    @Test(dataProvider = "addProjectData", dataProviderClass = DataProviderFactory.class)
+    @Test(dataProvider = "projectBaseData", dataProviderClass = DataProviderFactory.class)
     public void testDeleteProject(CustomerDTO customerDTO, ProjectDTO projectDTO) {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();

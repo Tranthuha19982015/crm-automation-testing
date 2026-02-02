@@ -75,8 +75,8 @@ public class DataProviderFactory {
 
     //-------------------------------PROJECTS DATA------------------------------------------
     //TCs: (cus, add)
-    @DataProvider(name = "addProjectData")
-    public Object[][] addProject() {
+    @DataProvider(name = "projectBaseData")
+    public Object[][] projectBaseData() {
         ExcelHelper excel = new ExcelHelper();
 
         int startRow = 1;
