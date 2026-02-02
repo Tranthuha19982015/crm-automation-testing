@@ -17,7 +17,7 @@ public class ProjectPage extends BasePage {
     private By headerProjectsSummary = By.xpath("//div[@id='vueApp']//span[normalize-space()='Projects Summary']");
     private By inputSearchProjects = By.xpath("//div[@id='projects_filter']//input[@aria-controls='projects']");
 
-    private By firstRowItemProject(String projectName) {
+    private By projectItemInList(String projectName) {
         By xpathProject = By.xpath("//table[@id='projects']//a[normalize-space()='" + projectName + "']");
         return xpathProject;
     }
@@ -113,18 +113,18 @@ public class ProjectPage extends BasePage {
     private By buttonSave = By.xpath("//button[normalize-space()='Save']");
 
     //Processing methods
-    public void verifyHeaderProjectsSummaryDisplayed() {
+    public void verifyProjectsPageDisplayed() {
         Assert.assertTrue(WebUI.checkElementExist(headerProjectsSummary, 5, 500),
-                "The Projects Summary header is not displayed.");
+                "Projects page is not displayed.");
     }
 
-    public void clickButtonAddProject() {
+    public void clickNewProjectButton() {
         WebUI.clickElement(buttonNewProject);
     }
 
-    public void verifyHeaderAddNewProjectDisplayed() {
+    public void verifyAddNewProjectPageDisplayed() {
         Assert.assertTrue(WebUI.checkElementExist(headerAddNewProject, 5, 500),
-                "The Add New Project header is not displayed.");
+                "Add New Project page is not displayed.");
     }
 
     private void handleProjectName(ProjectDTO dto, ProjectEnum type) {
@@ -135,7 +135,7 @@ public class ProjectPage extends BasePage {
         WebUI.setTextIfChanged(inputProjectName, dto.getProjectName(), "value");
     }
 
-    private void selectCustomer(String customer) {
+    private void handleCustomer(String customer) {
         WebUI.selectSearchableDropdownIfChanged(dropdownCustomer, customer, "title", inputSearchCustomer, selectDropdownCustomer(customer));
     }
 
@@ -189,12 +189,12 @@ public class ProjectPage extends BasePage {
         }
 
         if ("Project Hours".equals(billingType)) {
-            WebUI.setTextIfChanged(inputRatePerHour, dto.getRatePerHour(),"value");
+            WebUI.setTextIfChanged(inputRatePerHour, dto.getRatePerHour(), "value");
         }
     }
 
     private void handleEstimatedHours(ProjectDTO dto) {
-        WebUI.setTextIfChanged(inputEstimatedHours, dto.getEstimatedHour(),"value");
+        WebUI.setTextIfChanged(inputEstimatedHours, dto.getEstimatedHour(), "value");
     }
 
     private void handleMembers(ProjectDTO dto) {
@@ -203,12 +203,12 @@ public class ProjectPage extends BasePage {
     }
 
     private void handleStartDate(ProjectDTO dto) {
-        WebUI.setTextIfChanged(inputStartDate, dto.getStartDate(),"value");
+        WebUI.setTextIfChanged(inputStartDate, dto.getStartDate(), "value");
         WebUI.clickElement(inputStartDate);
     }
 
     private void handleDeadline(ProjectDTO dto) {
-        WebUI.setTextIfChanged(inputDeadline, dto.getDeadline(),"value");
+        WebUI.setTextIfChanged(inputDeadline, dto.getDeadline(), "value");
         WebUI.clickElement(inputDeadline);
     }
 
@@ -224,9 +224,9 @@ public class ProjectPage extends BasePage {
         WebUI.setCheckboxIfChanged(checkboxSendCreatedEmail, dto.isCheckboxSendCreatedMail(), labelCheckboxSendCreatedEmail);
     }
 
-    public void fillData(ProjectDTO dto, String customer, ProjectEnum type) {
+    public void fillProjectForm(ProjectDTO dto, String customer, ProjectEnum type) {
         handleProjectName(dto, type);
-        selectCustomer(customer);
+        handleCustomer(customer);
         handleCalculateProgress(dto);
         handleBillingType(dto);
         handleStatus(dto);
@@ -241,36 +241,67 @@ public class ProjectPage extends BasePage {
         handleCheckboxSendCreatedEmail(dto);
     }
 
-    public void clickButtonSave() {
+    public void clickSaveProjectButton() {
         WebUI.clickElement(buttonSave);
     }
 
-    public ProjectDTO fillAndSaveProject(ProjectDTO projectDTO, String customer, ProjectEnum type) {
-        fillData(projectDTO, customer, type);
-        clickButtonSave();
+    public ProjectDTO fillProjectFormAndSave(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+        fillProjectForm(projectDTO, customer, type);
+        clickSaveProjectButton();
 
         return projectDTO;
     }
 
-    public void searchProject(String projectName) {
+    public void searchProjectByName(String projectName) {
         WebUI.waitForPageLoaded();
+//        WebUI.clickElement(inputSearchProjects);
+        WebUI.clearElementText(inputSearchProjects);
         WebUI.setTextAndKey(inputSearchProjects, projectName, Keys.ENTER);
         WebUI.sleep(1);
     }
 
-    public void verifyProjectIsAddedSuccessfully(String projectName) {
-        Assert.assertTrue(WebUI.checkElementExist(firstRowItemProject(projectName), 10, 500),
-                "Project is not added successfully.");
+    public void verifyProjectDisplayedInList(String projectName) {
+        Assert.assertTrue(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
+                "Project is not displayed in the project list.");
     }
 
-    public void clickButtonEdit(String projectName) {
-        WebUI.waitForElementVisible(firstRowItemProject(projectName));
-        WebUI.moveToElement(firstRowItemProject(projectName));
+    public void clickEditProjectButton(String projectName) {
+        WebUI.waitForElementVisible(projectItemInList(projectName));
+        WebUI.moveToElement(projectItemInList(projectName));
+        WebUI.sleep(1);
         WebUI.clickElement(buttonEditProject(projectName));
     }
 
-    public void verifyHeaderEditProjectDisplayed() {
+    public void verifyEditProjectPageDisplayed() {
         Assert.assertTrue(WebUI.checkElementExist(headerEditProject, 5, 500),
-                "The Edit Project header is not displayed.");
+                "Edit Project page is not displayed.");
+    }
+
+    public void clickDeleteProjectButton(String projectName) {
+        WebUI.waitForElementVisible(projectItemInList(projectName));
+        WebUI.moveToElement(projectItemInList(projectName));
+        WebUI.sleep(1);
+        WebUI.clickElement(buttonDeleteProject(projectName));
+    }
+
+    public void confirmDeleteProject(ProjectEnum type) {
+        if (type == ProjectEnum.ACCEPTED) {
+            WebUI.acceptAlert();
+            return;
+        } else if (type == ProjectEnum.DISMISSED) {
+            WebUI.dismissAlert();
+        }
+    }
+
+    public void verifyDeleteProjectResult(String projectName, ProjectEnum type) {
+        if (type == ProjectEnum.ACCEPTED) {
+            Assert.assertFalse(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
+                    "Project is still displayed after deletion was accepted.");
+            return;
+        }
+        if (type == ProjectEnum.DISMISSED) {
+            Assert.assertTrue(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
+                    "Project is not displayed after deletion was dismissed.");
+        }
     }
 }

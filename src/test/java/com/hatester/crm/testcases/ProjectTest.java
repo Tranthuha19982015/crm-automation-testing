@@ -39,15 +39,15 @@ public class ProjectTest extends BaseTest {
 
         //Add project
         projectPage = customerPage.goToProjectsFromMenu();
-        projectPage.verifyHeaderProjectsSummaryDisplayed();
-        projectPage.clickButtonAddProject();
-        projectPage.verifyHeaderAddNewProjectDisplayed();
+        projectPage.verifyProjectsPageDisplayed();
+        projectPage.clickNewProjectButton();
+        projectPage.verifyAddNewProjectPageDisplayed();
 
-        projectPage.fillAndSaveProject(projectDTO, customerName, ProjectEnum.ADD);
+        projectPage.fillProjectFormAndSave(projectDTO, customerName, ProjectEnum.ADD);
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProject(projectDTO.getProjectName());
-        projectPage.verifyProjectIsAddedSuccessfully(projectDTO.getProjectName());
+        projectPage.searchProjectByName(projectDTO.getProjectName());
+        projectPage.verifyProjectDisplayedInList(projectDTO.getProjectName());
     }
 
     @Test(dataProvider = "editProjectData", dataProviderClass = DataProviderFactory.class)
@@ -69,30 +69,66 @@ public class ProjectTest extends BaseTest {
 
         //Add project
         projectPage = customerPage.goToProjectsFromMenu();
-        projectPage.verifyHeaderProjectsSummaryDisplayed();
-        projectPage.clickButtonAddProject();
-        projectPage.verifyHeaderAddNewProjectDisplayed();
+        projectPage.verifyProjectsPageDisplayed();
+        projectPage.clickNewProjectButton();
+        projectPage.verifyAddNewProjectPageDisplayed();
 
-        ProjectDTO project = projectPage.fillAndSaveProject(projectAdd, customerName, ProjectEnum.ADD);
+        ProjectDTO project = projectPage.fillProjectFormAndSave(projectAdd, customerName, ProjectEnum.ADD);
         String projectName = project.getProjectName();
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProject(projectName);
-        projectPage.verifyProjectIsAddedSuccessfully(projectName);
+        projectPage.searchProjectByName(projectName);
+        projectPage.verifyProjectDisplayedInList(projectName);
 
 
         //Edit project
-        projectPage.clickButtonEdit(projectName);
-        projectPage.verifyHeaderEditProjectDisplayed();
+        projectPage.clickEditProjectButton(projectName);
+        projectPage.verifyEditProjectPageDisplayed();
 
-        projectPage.fillAndSaveProject(projectEdit, customerName, ProjectEnum.EDIT);
+        projectPage.fillProjectFormAndSave(projectEdit, customerName, ProjectEnum.EDIT);
 
         if (projectEdit.isUpdateProjectName()) {
             projectName = projectEdit.getProjectName();
         }
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProject(projectName);
-        projectPage.verifyProjectIsAddedSuccessfully(projectName);
+        projectPage.searchProjectByName(projectName);
+        projectPage.verifyProjectDisplayedInList(projectName);
+    }
+
+    @Test(dataProvider = "addProjectData", dataProviderClass = DataProviderFactory.class)
+    public void testDeleteProject(CustomerDTO customerDTO, ProjectDTO projectDTO) {
+        loginPage = new LoginPage();
+        dashboardPage = loginPage.login();
+
+        //Add Customer
+        customerPage = dashboardPage.goToCustomersFromMenu();
+        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
+        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomerDetailsTabIsActive();
+        String customerName = customerPage.addCustomer(customerDTO);
+        customerPage.goToCustomersFromMenu();
+
+        customerPage.searchCustomer(customerName);
+        customerPage.verifyCustomerIsAddedSuccessfully(customerName);
+
+        //Add project
+        projectPage = customerPage.goToProjectsFromMenu();
+        projectPage.verifyProjectsPageDisplayed();
+        projectPage.clickNewProjectButton();
+        projectPage.verifyAddNewProjectPageDisplayed();
+
+        ProjectDTO project = projectPage.fillProjectFormAndSave(projectDTO, customerName, ProjectEnum.ADD);
+        String projectName = project.getProjectName();
+
+        projectPage.goToProjectsFromMenu();
+        projectPage.searchProjectByName(projectName);
+        projectPage.verifyProjectDisplayedInList(projectName);
+
+        //Delete project
+        projectPage.clickDeleteProjectButton(projectName);
+        projectPage.confirmDeleteProject(ProjectEnum.ACCEPTED);
+        projectPage.searchProjectByName(projectName);
+        projectPage.verifyDeleteProjectResult(projectName, ProjectEnum.ACCEPTED);
     }
 }

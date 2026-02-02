@@ -1,5 +1,9 @@
 package com.hatester.enums;
 
 public enum ProjectEnum {
-    ADD, EDIT, DELETE;
+    //test type
+    ADD, EDIT, DELETE,
+
+    //confirm delete
+    ACCEPTED, DISMISSED
 }
