@@ -2,20 +2,25 @@ package com.hatester.crm.pages;
 
 import com.hatester.commons.BasePage;
 import com.hatester.crm.models.ProjectDTO;
-import com.hatester.enums.ProjectEnum;
+import com.hatester.enums.CRMEnum;
 import com.hatester.keywords.WebUI;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.testng.Assert;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ProjectPage extends BasePage {
     //projects list page
     private By buttonNewProject = By.xpath("//div[@id='vueApp']//a[normalize-space()='New Project' and contains(@href,'projects/project')]");
     private By headerProjectsSummary = By.xpath("//div[@id='vueApp']//span[normalize-space()='Projects Summary']");
     private By inputSearchProjects = By.xpath("//div[@id='projects_filter']//input[@aria-controls='projects']");
+
+    private By rowItemInList(String projectName) {
+        By rowItem = By.xpath("(//table[@id='projects']//a[normalize-space()='" + projectName + "'])/ancestor::tr");
+        return rowItem;
+    }
 
     private By projectItemInList(String projectName) {
         By xpathProject = By.xpath("//table[@id='projects']//a[normalize-space()='" + projectName + "']");
@@ -93,7 +98,10 @@ public class ProjectPage extends BasePage {
     private By buttonDeleteAllMembers = By.xpath("(//button[contains(@data-id,'project_members')]/following-sibling::div)/descendant::button[text()='Deselect All']");
 
     // input
+    private By labelStartDate = By.xpath("//label[@for='start_date']");
     private By inputStartDate = By.xpath("//input[@id='start_date']");
+
+    private By labelDeadline = By.xpath("//label[@for='deadline']");
     private By inputDeadline = By.xpath("//input[@id='deadline']");
 
     //tags
@@ -127,8 +135,8 @@ public class ProjectPage extends BasePage {
                 "Add New Project page is not displayed.");
     }
 
-    private void handleProjectName(ProjectDTO dto, ProjectEnum type) {
-        if (type == ProjectEnum.EDIT && !dto.isUpdateProjectName()) {
+    private void handleProjectName(ProjectDTO dto, CRMEnum type) {
+        if (type == CRMEnum.EDIT && !dto.isUpdateProjectName()) {
             return;
         }
 
@@ -198,18 +206,18 @@ public class ProjectPage extends BasePage {
     }
 
     private void handleMembers(ProjectDTO dto) {
-        Consumer<String> selectMember = member -> WebUI.clickElement(selectDropdownMembers(member));
-        WebUI.selectMultiDropdownIfChanged(dropdownMembers, dto.getMembers(), buttonDeleteAllMembers, selectMember);
+        Function<String, By> selectMember = member -> selectDropdownMembers(member);
+        WebUI.selectMultiDropdownToggleIfChanged(dropdownMembers, dto.getMembers(), "title", selectMember);
     }
 
     private void handleStartDate(ProjectDTO dto) {
         WebUI.setTextIfChanged(inputStartDate, dto.getStartDate(), "value");
-        WebUI.clickElement(inputStartDate);
+        WebUI.clickElement(labelStartDate);
     }
 
     private void handleDeadline(ProjectDTO dto) {
         WebUI.setTextIfChanged(inputDeadline, dto.getDeadline(), "value");
-        WebUI.clickElement(inputDeadline);
+        WebUI.clickElement(labelDeadline);
     }
 
     private void handleTags(ProjectDTO dto) {
@@ -224,7 +232,7 @@ public class ProjectPage extends BasePage {
         WebUI.setCheckboxIfChanged(checkboxSendCreatedEmail, dto.isCheckboxSendCreatedMail(), labelCheckboxSendCreatedEmail);
     }
 
-    public void fillProjectForm(ProjectDTO dto, String customer, ProjectEnum type) {
+    public void fillProjectForm(ProjectDTO dto, String customer, CRMEnum type) {
         handleProjectName(dto, type);
         handleCustomer(customer);
         handleCalculateProgress(dto);
@@ -234,6 +242,7 @@ public class ProjectPage extends BasePage {
         handleBillingRate(dto);
         handleEstimatedHours(dto);
         handleMembers(dto);
+        WebUI.scrollToElementAtBottom(buttonSave);
         handleStartDate(dto);
         handleDeadline(dto);
         handleTags(dto);
@@ -245,7 +254,7 @@ public class ProjectPage extends BasePage {
         WebUI.clickElement(buttonSave);
     }
 
-    public ProjectDTO fillProjectFormAndSave(ProjectDTO projectDTO, String customer, ProjectEnum type) {
+    public ProjectDTO fillProjectFormAndSave(ProjectDTO projectDTO, String customer, CRMEnum type) {
         fillProjectForm(projectDTO, customer, type);
         clickSaveProjectButton();
 
@@ -254,7 +263,6 @@ public class ProjectPage extends BasePage {
 
     public void searchProjectByName(String projectName) {
         WebUI.waitForPageLoaded();
-//        WebUI.clickElement(inputSearchProjects);
         WebUI.clearElementText(inputSearchProjects);
         WebUI.setTextAndKey(inputSearchProjects, projectName, Keys.ENTER);
         WebUI.sleep(1);
@@ -266,10 +274,12 @@ public class ProjectPage extends BasePage {
     }
 
     public void clickEditProjectButton(String projectName) {
-        WebUI.waitForElementVisible(projectItemInList(projectName));
-        WebUI.moveToElement(projectItemInList(projectName));
-        WebUI.sleep(1);
-        WebUI.clickElement(buttonEditProject(projectName));
+//        WebUI.waitForElementVisible(projectItemInList(projectName));
+//        WebUI.moveToElement(rowItemInList(projectName));
+//        WebUI.sleep(1);
+//        WebUI.clickElement(buttonEditProject(projectName));
+
+        WebUI.clickJS(buttonEditProject(projectName));
     }
 
     public void verifyEditProjectPageDisplayed() {
@@ -278,28 +288,30 @@ public class ProjectPage extends BasePage {
     }
 
     public void clickDeleteProjectButton(String projectName) {
-        WebUI.waitForElementVisible(projectItemInList(projectName));
-        WebUI.moveToElement(projectItemInList(projectName));
-        WebUI.sleep(1);
-        WebUI.clickElement(buttonDeleteProject(projectName));
+//        WebUI.waitForElementVisible(projectItemInList(projectName));
+//        WebUI.moveToElement(rowItemInList(projectName));
+//        WebUI.sleep(1);
+//        WebUI.clickElement(buttonDeleteProject(projectName));
+
+        WebUI.clickJS(buttonDeleteProject(projectName));
     }
 
-    public void confirmDeleteProject(ProjectEnum type) {
-        if (type == ProjectEnum.ACCEPTED) {
+    public void confirmDeleteProject(CRMEnum type) {
+        if (type == CRMEnum.ACCEPTED) {
             WebUI.acceptAlert();
             return;
-        } else if (type == ProjectEnum.DISMISSED) {
+        } else if (type == CRMEnum.DISMISSED) {
             WebUI.dismissAlert();
         }
     }
 
-    public void verifyDeleteProjectResult(String projectName, ProjectEnum type) {
-        if (type == ProjectEnum.ACCEPTED) {
+    public void verifyDeleteProjectResult(String projectName, CRMEnum type) {
+        if (type == CRMEnum.ACCEPTED) {
             Assert.assertFalse(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
                     "Project is still displayed after deletion was accepted.");
             return;
         }
-        if (type == ProjectEnum.DISMISSED) {
+        if (type == CRMEnum.DISMISSED) {
             Assert.assertTrue(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
                     "Project is not displayed after deletion was dismissed.");
         }

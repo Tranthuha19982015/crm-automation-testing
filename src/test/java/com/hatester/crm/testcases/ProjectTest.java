@@ -8,7 +8,7 @@ import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.crm.pages.ProjectPage;
 import com.hatester.dataproviders.DataProviderFactory;
-import com.hatester.enums.ProjectEnum;
+import com.hatester.enums.CRMEnum;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.testng.annotations.Test;
@@ -34,8 +34,8 @@ public class ProjectTest extends BaseTest {
         String customerName = customerPage.addCustomer(customerDTO);
         customerPage.goToCustomersFromMenu();
 
-        customerPage.searchCustomer(customerDTO.getCompany());
-        customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
+        customerPage.searchCustomer(customerName);
+        customerPage.verifyCustomerIsAddedSuccessfully(customerName);
 
         //Add project
         projectPage = customerPage.goToProjectsFromMenu();
@@ -43,11 +43,12 @@ public class ProjectTest extends BaseTest {
         projectPage.clickNewProjectButton();
         projectPage.verifyAddNewProjectPageDisplayed();
 
-        projectPage.fillProjectFormAndSave(projectDTO, customerName, ProjectEnum.ADD);
+        ProjectDTO project = projectPage.fillProjectFormAndSave(projectDTO, customerName, CRMEnum.ADD);
+        String projectName = project.getProjectName();
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectDTO.getProjectName());
-        projectPage.verifyProjectDisplayedInList(projectDTO.getProjectName());
+        projectPage.searchProjectByName(projectName);
+        projectPage.verifyProjectDisplayedInList(projectName);
     }
 
     @Test(dataProvider = "editProjectData", dataProviderClass = DataProviderFactory.class)
@@ -73,7 +74,7 @@ public class ProjectTest extends BaseTest {
         projectPage.clickNewProjectButton();
         projectPage.verifyAddNewProjectPageDisplayed();
 
-        ProjectDTO project = projectPage.fillProjectFormAndSave(projectAdd, customerName, ProjectEnum.ADD);
+        ProjectDTO project = projectPage.fillProjectFormAndSave(projectAdd, customerName, CRMEnum.ADD);
         String projectName = project.getProjectName();
 
         projectPage.goToProjectsFromMenu();
@@ -85,7 +86,7 @@ public class ProjectTest extends BaseTest {
         projectPage.clickEditProjectButton(projectName);
         projectPage.verifyEditProjectPageDisplayed();
 
-        projectPage.fillProjectFormAndSave(projectEdit, customerName, ProjectEnum.EDIT);
+        projectPage.fillProjectFormAndSave(projectEdit, customerName, CRMEnum.EDIT);
 
         if (projectEdit.isUpdateProjectName()) {
             projectName = projectEdit.getProjectName();
@@ -112,13 +113,14 @@ public class ProjectTest extends BaseTest {
         customerPage.searchCustomer(customerName);
         customerPage.verifyCustomerIsAddedSuccessfully(customerName);
 
+
         //Add project
         projectPage = customerPage.goToProjectsFromMenu();
         projectPage.verifyProjectsPageDisplayed();
         projectPage.clickNewProjectButton();
         projectPage.verifyAddNewProjectPageDisplayed();
 
-        ProjectDTO project = projectPage.fillProjectFormAndSave(projectDTO, customerName, ProjectEnum.ADD);
+        ProjectDTO project = projectPage.fillProjectFormAndSave(projectDTO, customerName, CRMEnum.ADD);
         String projectName = project.getProjectName();
 
         projectPage.goToProjectsFromMenu();
@@ -127,8 +129,8 @@ public class ProjectTest extends BaseTest {
 
         //Delete project
         projectPage.clickDeleteProjectButton(projectName);
-        projectPage.confirmDeleteProject(ProjectEnum.ACCEPTED);
+        projectPage.confirmDeleteProject(CRMEnum.ACCEPTED);
         projectPage.searchProjectByName(projectName);
-        projectPage.verifyDeleteProjectResult(projectName, ProjectEnum.ACCEPTED);
+        projectPage.verifyDeleteProjectResult(projectName, CRMEnum.ACCEPTED);
     }
 }
