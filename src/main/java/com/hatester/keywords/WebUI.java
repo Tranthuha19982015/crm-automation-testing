@@ -2,6 +2,7 @@ package com.hatester.keywords;
 
 import com.hatester.drivers.DriverManager;
 import com.hatester.reports.AllureManager;
+import com.hatester.utils.DataUtil;
 import com.hatester.utils.LogUtils;
 import io.qameta.allure.Step;
 import org.apache.commons.lang3.StringUtils;
@@ -16,8 +17,11 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.hatester.config.FrameworkConfig.*;
 
@@ -724,29 +728,51 @@ public class WebUI {
 
         clickElement(dropdown);
         setText(inputSearchDropdown, expected);
+        sleep(0.5);
         sendTextByAction(inputSearchDropdown, " ");
         clickElement(optionDropdown);
     }
 
-    //Consumer<t> là một functional interface để truyền hành động vào hàm
-    //Consumer<String> là một hàm nhận vào String và không trả về giá trị
-    public static void selectMultiDropdownIfChanged(By dropdown, List<String> expected, By buttonClearSelection, Consumer<String> selectOption) {
-        if (expected == null) {
+    //Function<String, By>: là Java Function, Nhận vào 1 giá trị kiểu String → Trả ra 1 giá trị kiểu By
+    public static void selectMultiDropdownToggleIfChanged(By dropdown, List<String> expected, String attribute, Function<String, By> optionByText) {
+        //Không truyền dữ liệu → không làm gì
+        if (expected.size() <= 0 || expected == null) {
             return;
         }
 
+        //Lấy giá trị đang selected trên UI
+        List<String> current;
+
+        String raw = getElementAttribute(dropdown, attribute);
+
+        if (raw == null || raw.isBlank() || raw.equalsIgnoreCase("Nothing selected")) {
+            current = Collections.emptyList();
+        } else {
+            current = DataUtil.parseList(raw);
+        }
+
+        //chuyển list thành set để bỏ qua thứ tự khi duyệt for
+        Set<String> expectedSet = expected.stream().map(String::trim).collect(Collectors.toSet());
+        Set<String> currentSet = current.stream().map(String::trim).collect(Collectors.toSet());
+
+        //Mở dropdown
         clickElement(dropdown);
-        clickElement(buttonClearSelection);
 
-        if (expected.isEmpty()) {
-            clickElement(dropdown);
-            return;
+        //Xóa giá trị trên UI nếu không có trong excel
+        for (String value : currentSet) {
+            if (!expectedSet.contains(value)) {
+                clickElement(optionByText.apply(value));
+            }
         }
 
+        //Add giá trị thiếu (giữ thứ tự Excel)
         for (String value : expected) {
-            selectOption.accept(value);  //consumer.accept(t): gọi hành động được truyền vào hàm với tham số t
+            if (!currentSet.contains(value)) {
+                clickElement(optionByText.apply(value));
+            }
         }
 
+        //Đóng dropdown
         clickElement(dropdown);
     }
 
