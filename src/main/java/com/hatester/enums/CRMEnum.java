@@ -1,6 +1,6 @@
 package com.hatester.enums;
 
-public enum ProjectEnum {
+public enum CRMEnum {
     //test type
     ADD, EDIT, DELETE,
 
