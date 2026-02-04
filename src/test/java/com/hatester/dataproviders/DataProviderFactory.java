@@ -3,9 +3,11 @@ package com.hatester.dataproviders;
 import com.hatester.crm.mappers.CustomerMapper;
 import com.hatester.crm.mappers.LoginMapper;
 import com.hatester.crm.mappers.ProjectMapper;
+import com.hatester.crm.mappers.TaskMapper;
 import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.models.LoginDTO;
 import com.hatester.crm.models.ProjectDTO;
+import com.hatester.crm.models.TaskDTO;
 import com.hatester.helpers.ExcelHelper;
 import org.testng.annotations.DataProvider;
 
@@ -102,6 +104,7 @@ public class DataProviderFactory {
         return finalData;
     }
 
+    //Cấu trúc data trả về: Object[][] = {{ CustomerDTO, addProjectDTO, editProjectDTO }}
     //TCs 1: (cus1, add1, edit1)
     //TCs 2: (cus1, add2, edit2)
     @DataProvider(name = "editProjectData", parallel = false)
@@ -131,6 +134,38 @@ public class DataProviderFactory {
             finalData[indexTCs][2] = editProject;
 
             indexTCs++;
+        }
+        return finalData;
+    }
+
+
+    //-------------------------------TASKS DATA------------------------------------------
+    @DataProvider(name = "taskBaseData")
+    public Object[][] taskBaseData() {
+        ExcelHelper excel = new ExcelHelper();
+
+        int startRow = 1;
+        int endRow = 1;
+
+        Object[][] customerData = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, startRow, endRow);
+        Object[][] projectData = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, startRow, endRow);
+        Object[][] taskData = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_TASKS, startRow, endRow);
+
+        int totalRow = (endRow - startRow) + 1;
+
+        Object[][] finalData = new Object[totalRow][3];
+        for (int i = 0; i < totalRow; i++) {
+            Map<String, String> customerRow = (Map<String, String>) customerData[i][0];
+            Map<String, String> projectRow = (Map<String, String>) projectData[i][0];
+            Map<String, String> taskRow = (Map<String, String>) taskData[i][0];
+
+            CustomerDTO customerDTO = CustomerMapper.customerMapper(customerRow);
+            ProjectDTO projectDTO = ProjectMapper.projectMapper(projectRow);
+            TaskDTO taskDTO = TaskMapper.taskMapper(taskRow);
+
+            finalData[i][0] = customerDTO;
+            finalData[i][1] = projectDTO;
+            finalData[i][2] = taskDTO;
         }
         return finalData;
     }
