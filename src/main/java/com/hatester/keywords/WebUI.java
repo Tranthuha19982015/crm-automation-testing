@@ -494,6 +494,16 @@ public class WebUI {
         AllureManager.saveTextLog("Set slider value to: " + percent + "%");
     }
 
+    @Step("Click on element: {0}")
+    public static void clickJS(By by){
+        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
+        js.executeScript("arguments[0].click();", getWebElement(by));
+        LogUtils.info("Click on element " + by);
+        if (isScreenshotAllSteps()) {
+            AllureManager.saveScreenshotPNG();
+        }
+    }
+
     public static boolean moveToElement(By by) {
         try {
             Actions action = new Actions(DriverManager.getDriver());
