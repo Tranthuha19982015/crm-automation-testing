@@ -21,7 +21,7 @@ public class CustomerPage extends BasePage {
 
     private By inputSearchCustomers = By.xpath("//div[@id='clients_filter']/descendant::input[@type='search']");
 
-    private By firstRowItemCompanyName(String companyName) {
+    private By customerItemInList(String companyName) {
         By xpathCompanyName = By.xpath("//table[@id='clients']/descendant::a[text()='" + companyName + "']");
         return xpathCompanyName;
     }
@@ -84,65 +84,67 @@ public class CustomerPage extends BasePage {
     private By buttonSave = By.xpath("//div[@id='profile-save-section']//button[normalize-space()='Save']");
 
     //Processing methods
-    public void verifyHeaderCustomersSummaryIsDisplayed() {
-        Assert.assertTrue(WebUI.checkElementExist(headerCustomersSummary, 5, 500), "Header customers summary is not displayed.");
+    public void verifyCustomersPageDisplayed() {
+        Assert.assertTrue(WebUI.checkElementExist(headerCustomersSummary, 5, 500),
+                "Customers page is not displayed.");
     }
 
-    public void clickButtonNewCustomer() {
+    public void clickNewCustomerButton() {
         WebUI.clickElement(buttonNewCustomer);
     }
 
     public void verifyCustomerDetailsTabIsActive() {
-        Assert.assertTrue(WebUI.checkElementExist(tabCustomerDetails, 5, 500), "Customer Details tab is not active.");
+        Assert.assertTrue(WebUI.checkElementExist(tabCustomerDetails, 5, 500),
+                "Customer Details tab is not active.");
     }
 
-    private void fillData(CustomerDTO customerDTO) {
-        WebUI.setText(inputCompany, customerDTO.getCompany());
-        WebUI.setText(inputVatNumber, customerDTO.getVatNumber());
-        WebUI.setText(inputPhone, customerDTO.getPhone());
-        WebUI.setText(inputWebsite, customerDTO.getWebsite());
+    private void fillCustomerForm(CustomerDTO dto) {
+        WebUI.setText(inputCompany, dto.getCompany());
+        WebUI.setText(inputVatNumber, dto.getVatNumber());
+        WebUI.setText(inputPhone, dto.getPhone());
+        WebUI.setText(inputWebsite, dto.getWebsite());
 
         WebUI.clickElement(dropdownGroups);
-        WebUI.setText(inputSearchGroup, customerDTO.getGroups());
-        WebUI.clickElement(valueGroup(customerDTO.getGroups()));
+        WebUI.setText(inputSearchGroup, dto.getGroups());
+        WebUI.clickElement(valueGroup(dto.getGroups()));
         WebUI.clickElement(dropdownGroups);
 
         WebUI.clickElement(dropdownCurrency);
-        WebUI.setText(inputSearchCurrency, customerDTO.getCurrency());
-        WebUI.clickElement(valueCurrency(customerDTO.getCurrency()));
+        WebUI.setText(inputSearchCurrency, dto.getCurrency());
+        WebUI.clickElement(valueCurrency(dto.getCurrency()));
 
         WebUI.clickElement(dropdownDefaultLanguage);
-        WebUI.clickElement(valueLanguage(customerDTO.getDefaultLanguage()));
+        WebUI.clickElement(valueLanguage(dto.getDefaultLanguage()));
 
-        WebUI.setText(inputAddress, customerDTO.getAddress());
-        WebUI.setText(inputCity, customerDTO.getCity());
-        WebUI.setText(inputState, customerDTO.getState());
-        WebUI.setText(inputZipCode, customerDTO.getZipCode());
+        WebUI.setText(inputAddress, dto.getAddress());
+        WebUI.setText(inputCity, dto.getCity());
+        WebUI.setText(inputState, dto.getState());
+        WebUI.setText(inputZipCode, dto.getZipCode());
 
         WebUI.clickElement(dropdownCountry);
-        WebUI.setText(inputSearchCountry, customerDTO.getCountry());
-        WebUI.clickElement(valueCountry(customerDTO.getCountry()));
+        WebUI.setText(inputSearchCountry, dto.getCountry());
+        WebUI.clickElement(valueCountry(dto.getCountry()));
     }
 
-    private void clickButtonSave() {
+    private void clickSaveCustomerButton() {
         WebUI.clickElement(buttonSave);
     }
 
-    public String addCustomer(CustomerDTO customerDTO) {
-        fillData(customerDTO);
-        clickButtonSave();
+    public CustomerDTO fillCustomerFormAndSave(CustomerDTO dto) {
+        fillCustomerForm(dto);
+        clickSaveCustomerButton();
 
-        return customerDTO.getCompany();
+        return dto;
     }
 
-    public void searchCustomer(String company) {
+    public void searchCustomerByName(String company) {
         WebUI.waitForPageLoaded();
         WebUI.clickElement(inputSearchCustomers);
         WebUI.setText(inputSearchCustomers, company);
     }
 
-    public void verifyCustomerIsAddedSuccessfully(String company) {
-        Assert.assertTrue(WebUI.checkElementExist(firstRowItemCompanyName(company), 10, 500),
-                "Customer is not added successfully.");
+    public void verifyCustomerDisplayedInList(String company) {
+        Assert.assertTrue(WebUI.checkElementExist(customerItemInList(company), 10, 500),
+                "Customer is not displayed in the customer list.");
     }
 }

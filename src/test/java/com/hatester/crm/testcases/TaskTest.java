@@ -21,19 +21,22 @@ public class TaskTest extends BaseTest {
     private TaskPage taskPage;
 
     @Test(dataProvider = "taskBaseData", dataProviderClass = DataProviderFactory.class)
-    public void testAddTask(CustomerDTO cusDTO, ProjectDTO proDTO, TaskDTO taskDTO) {
+    public void testAddTask(CustomerDTO customerDTO, ProjectDTO projectDTO, TaskDTO taskDTO) {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
 
         //add customer
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
-        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomersPageDisplayed();
+        customerPage.clickNewCustomerButton();
         customerPage.verifyCustomerDetailsTabIsActive();
-        String customerName = customerPage.addCustomer(cusDTO);
+
+        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        String customerName = cusDTO.getCompany();
+
         customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomer(customerName);
-        customerPage.verifyCustomerIsAddedSuccessfully(customerName);
+        customerPage.searchCustomerByName(customerName);
+        customerPage.verifyCustomerDisplayedInList(customerName);
 
         //add project
         projectPage = customerPage.goToProjectsFromMenu();
@@ -41,8 +44,8 @@ public class TaskTest extends BaseTest {
         projectPage.clickNewProjectButton();
         projectPage.verifyAddNewProjectPageDisplayed();
 
-        ProjectDTO projectDTO = projectPage.fillProjectFormAndSave(proDTO, customerName, CRMEnum.ADD);
-        String projectName = projectDTO.getProjectName();
+        ProjectDTO proDTO = projectPage.fillProjectFormAndSave(projectDTO, customerName, CRMEnum.ADD);
+        String projectName = proDTO.getProjectName();
 
         projectPage.goToProjectsFromMenu();
         projectPage.searchProjectByName(projectName);

@@ -6,7 +6,6 @@ import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.dataproviders.DataProviderFactory;
-import com.hatester.helpers.SystemHelper;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.testng.annotations.Test;
@@ -24,12 +23,15 @@ public class CustomerTest extends BaseTest {
         dashboardPage = loginPage.login();
 
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
-        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomersPageDisplayed();
+        customerPage.clickNewCustomerButton();
         customerPage.verifyCustomerDetailsTabIsActive();
-        customerPage.addCustomer(customerDTO);
+
+        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        String customerName = cusDTO.getCompany();
+
         customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomer(customerDTO.getCompany());
-        customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
+        customerPage.searchCustomerByName(customerName);
+        customerPage.verifyCustomerDisplayedInList(customerName);
     }
 }

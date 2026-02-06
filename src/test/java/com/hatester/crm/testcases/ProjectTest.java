@@ -28,14 +28,16 @@ public class ProjectTest extends BaseTest {
 
         //Add Customer
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
-        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomersPageDisplayed();
+        customerPage.clickNewCustomerButton();
         customerPage.verifyCustomerDetailsTabIsActive();
-        String customerName = customerPage.addCustomer(customerDTO);
-        customerPage.goToCustomersFromMenu();
 
-        customerPage.searchCustomer(customerName);
-        customerPage.verifyCustomerIsAddedSuccessfully(customerName);
+        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        String customerName = cusDTO.getCompany();
+
+        customerPage.goToCustomersFromMenu();
+        customerPage.searchCustomerByName(customerName);
+        customerPage.verifyCustomerDisplayedInList(customerName);
 
         //Add project
         projectPage = customerPage.goToProjectsFromMenu();
@@ -58,14 +60,16 @@ public class ProjectTest extends BaseTest {
 
         //Add Customer
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
-        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomersPageDisplayed();
+        customerPage.clickNewCustomerButton();
         customerPage.verifyCustomerDetailsTabIsActive();
-        String customerName = customerPage.addCustomer(customerDTO);
-        customerPage.goToCustomersFromMenu();
 
-        customerPage.searchCustomer(customerDTO.getCompany());
-        customerPage.verifyCustomerIsAddedSuccessfully(customerDTO.getCompany());
+        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        String customerName = cusDTO.getCompany();
+
+        customerPage.goToCustomersFromMenu();
+        customerPage.searchCustomerByName(customerName);
+        customerPage.verifyCustomerDisplayedInList(customerName);
 
 
         //Add project
@@ -104,14 +108,16 @@ public class ProjectTest extends BaseTest {
 
         //Add Customer
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyHeaderCustomersSummaryIsDisplayed();
-        customerPage.clickButtonNewCustomer();
+        customerPage.verifyCustomersPageDisplayed();
+        customerPage.clickNewCustomerButton();
         customerPage.verifyCustomerDetailsTabIsActive();
-        String customerName = customerPage.addCustomer(customerDTO);
-        customerPage.goToCustomersFromMenu();
 
-        customerPage.searchCustomer(customerName);
-        customerPage.verifyCustomerIsAddedSuccessfully(customerName);
+        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        String customerName = cusDTO.getCompany();
+
+        customerPage.goToCustomersFromMenu();
+        customerPage.searchCustomerByName(customerName);
+        customerPage.verifyCustomerDisplayedInList(customerName);
 
 
         //Add project
