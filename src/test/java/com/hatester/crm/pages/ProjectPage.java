@@ -84,6 +84,7 @@ public class ProjectPage extends BasePage {
     private By labelCheckboxSendFinished = By.xpath("//label[@for='project_marked_as_finished_email_to_contacts']");
 
     // estimated hours
+    private By labelEstimatedHours = By.xpath("//label[@for='estimated_hours']");
     private By inputEstimatedHours = By.xpath("//input[@id='estimated_hours']");
 
     // members
@@ -98,10 +99,7 @@ public class ProjectPage extends BasePage {
     private By buttonDeleteAllMembers = By.xpath("(//button[contains(@data-id,'project_members')]/following-sibling::div)/descendant::button[text()='Deselect All']");
 
     // input
-    private By labelStartDate = By.xpath("//label[@for='start_date']");
     private By inputStartDate = By.xpath("//input[@id='start_date']");
-
-    private By labelDeadline = By.xpath("//label[@for='deadline']");
     private By inputDeadline = By.xpath("//input[@id='deadline']");
 
     //tags
@@ -212,12 +210,12 @@ public class ProjectPage extends BasePage {
 
     private void handleStartDate(ProjectDTO dto) {
         WebUI.setTextIfChanged(inputStartDate, dto.getStartDate(), "value");
-        WebUI.clickElement(labelStartDate);
+        WebUI.clickElement(labelEstimatedHours);
     }
 
     private void handleDeadline(ProjectDTO dto) {
         WebUI.setTextIfChanged(inputDeadline, dto.getDeadline(), "value");
-        WebUI.clickElement(labelDeadline);
+        WebUI.clickElement(labelEstimatedHours);
     }
 
     private void handleTags(ProjectDTO dto) {
