@@ -12,6 +12,7 @@ public class TaskMapper {
 
         taskDTO.setCheckboxPublic(Boolean.parseBoolean(map.get("PUBLIC")));
         taskDTO.setCheckboxBillable(Boolean.parseBoolean(map.get("BILLABLE")));
+        taskDTO.setAttachFile(DataUtil.parseList(map.get("ATTACH_FILE")));
         taskDTO.setTaskName(TestDataUtil.generateUnique(map.get("TASK_NAME")));
         taskDTO.setMilestone(map.get("MILESTONE"));
         taskDTO.setStartDate(map.get("START_DATE"));

@@ -8,6 +8,10 @@ public class FrameworkConfig {
         return PropertiesHelper.getValue("EXCEL_DATA_FILE_PATH");
     }
 
+    public static String getUploadFilePath() {
+        return PropertiesHelper.getValue("UPLOAD_FILE_PATH");
+    }
+
     public static String getBrowser() {
         return PropertiesHelper.getValue("BROWSER");
     }

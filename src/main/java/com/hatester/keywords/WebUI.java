@@ -495,7 +495,7 @@ public class WebUI {
     }
 
     @Step("Click on element: {0}")
-    public static void clickJS(By by){
+    public static void clickJS(By by) {
         JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
         js.executeScript("arguments[0].click();", getWebElement(by));
         LogUtils.info("Click on element " + by);
@@ -848,5 +848,29 @@ public class WebUI {
         }
 
         clickElement(label);
+    }
+
+    public static void uploadMultiFileBySendkeys(By openAttachLocator, Function<Integer, By> addMoreIconLocator,
+                                                 Function<Integer, By> fileInputLocator, List<String> files, String baseUploadPath) {
+        if (files == null || files.isEmpty()) {
+            return;
+        }
+
+        if (openAttachLocator != null) {
+            clickElement(openAttachLocator);
+        }
+
+        // Click icon Add more files nếu có nhiều hơn 1 file
+        if (files.size() > 1 && addMoreIconLocator != null) {
+            for (int i = 0; i < files.size() - 1; i++) {
+                clickElement(addMoreIconLocator.apply(0));
+            }
+        }
+
+        // Set file path
+        for (int i = 0; i < files.size(); i++) {
+            String fullPath = baseUploadPath + files.get(i);
+            setText(fileInputLocator.apply(i), fullPath);
+        }
     }
 }

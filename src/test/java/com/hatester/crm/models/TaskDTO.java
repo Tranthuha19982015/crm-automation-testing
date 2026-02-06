@@ -8,6 +8,7 @@ import java.util.List;
 public class TaskDTO {
     private boolean checkboxPublic;
     private boolean checkboxBillable;
+    private List<String> attachFile;
     private String taskName;
     private String milestone;
     private String startDate;

@@ -1,14 +1,19 @@
 package com.hatester.crm.pages;
 
 import com.hatester.commons.BasePage;
+import com.hatester.config.FrameworkConfig;
 import com.hatester.crm.models.TaskDTO;
 import com.hatester.enums.CRMEnum;
+import com.hatester.helpers.SystemHelper;
 import com.hatester.keywords.WebUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.testng.Assert;
 
+import java.util.List;
 import java.util.function.Function;
+
+import static com.hatester.config.FrameworkConfig.getUploadFilePath;
 
 public class TaskPage extends BasePage {
     //list task page
@@ -51,7 +56,13 @@ public class TaskPage extends BasePage {
         return inputAttach;
     }
 
+    private By iconAddMoreFiles(int index) {
+        By iconAddMoreFile = By.xpath("(//input[@name='attachments[" + index + "]' and @type='file']/following-sibling::span)/button[contains(@class,'add_more_attachments')]");
+        return iconAddMoreFile;
+    }
+
     /// task name (subject)
+    private By labelTaskName = By.xpath("//label[@for='name']");
     private By inputTaskName = By.xpath("//div[@app-field-wrapper='name']//input[@id='name']");
 
     /// milestone
@@ -146,8 +157,7 @@ public class TaskPage extends BasePage {
 
     //Processing methods
     public void verifyTasksPageDisplayed() {
-        Assert.assertTrue(WebUI.checkElementExist(headerTasksSummary, 10, 500),
-                "Task page is not displayed.");
+        Assert.assertTrue(WebUI.checkElementExist(headerTasksSummary, 10, 500), "Task page is not displayed.");
     }
 
     public void clickNewTaskButton() {
@@ -155,9 +165,8 @@ public class TaskPage extends BasePage {
     }
 
     public void verifyAddNewTaskDialogDisplayed() {
-        boolean checked = WebUI.checkElementExist(headerAddNewTask, 5, 500)
-                && WebUI.getElementText(headerAddNewTask).trim().equals("Add new task");
-        Assert.assertTrue(checked, "Add New Task dialog is not displayed.");
+        Assert.assertTrue(WebUI.checkElementExist(headerAddNewTask, 5, 500), "Add New Task dialog is not displayed.");
+        Assert.assertEquals(WebUI.getElementText(headerAddNewTask).trim(), "Add new task", "The header Add new task does not match.");
     }
 
     private void handleCheckboxPublic(TaskDTO dto) {
@@ -166,6 +175,13 @@ public class TaskPage extends BasePage {
 
     private void handleCheckboxBillable(TaskDTO dto) {
         WebUI.setCheckboxIfChanged(checkboxBillable, dto.isCheckboxBillable(), labelCheckboxBillable);
+    }
+
+    private void handleAttachFiles(TaskDTO dto, CRMEnum type) {
+        Function<Integer, By> iconAddMore = index -> iconAddMoreFiles(index);
+        Function<Integer, By> inputAttach = index -> inputAttachFile(index);
+        String fullFilePath = SystemHelper.getCurrentDir() + getUploadFilePath();
+        WebUI.uploadMultiFileBySendkeys(textLinkAttachFiles, iconAddMore, inputAttach, dto.getAttachFile(), fullFilePath);
     }
 
     private void handleProjectName(TaskDTO dto, CRMEnum type) {
@@ -182,12 +198,12 @@ public class TaskPage extends BasePage {
 
     private void handleStartDate(TaskDTO dto) {
         WebUI.setTextIfChanged(inputStartDate, dto.getStartDate(), "value");
-        WebUI.clickElement(inputStartDate);
+        WebUI.clickElement(labelTaskName);
     }
 
     private void handleDueDate(TaskDTO dto) {
         WebUI.setTextIfChanged(inputDueDate, dto.getDueDate(), "value");
-        WebUI.clickElement(inputDueDate);
+        WebUI.clickElement(labelTaskName);
     }
 
     private void handlePriority(TaskDTO dto) {
@@ -203,8 +219,7 @@ public class TaskPage extends BasePage {
     private void handleRepeatInterval(TaskDTO dto) {
         if ("Custom".equals(dto.getRepeatEvery())) {
             WebUI.setTextIfChanged(inputRepeatIntervalValue, dto.getRepeatIntervalValue(), "value");
-            WebUI.selectDropdownIfChanged(dropdownRepeatIntervalUnit, dto.getRepeatIntervalUnit(), "title",
-                    selectDropdownRepeatIntervalUnit(dto.getRepeatIntervalUnit()));
+            WebUI.selectDropdownIfChanged(dropdownRepeatIntervalUnit, dto.getRepeatIntervalUnit(), "title", selectDropdownRepeatIntervalUnit(dto.getRepeatIntervalUnit()));
         }
     }
 
@@ -220,13 +235,11 @@ public class TaskPage extends BasePage {
 
     private void handleRelatedToType(TaskDTO dto) {
         String expectedRelatedToType = dto.getRelatedToType();
-        WebUI.selectDropdownIfChanged(dropdownRelatedToType, expectedRelatedToType, "title",
-                selectDropdownRelatedToType(expectedRelatedToType));
+        WebUI.selectDropdownIfChanged(dropdownRelatedToType, expectedRelatedToType, "title", selectDropdownRelatedToType(expectedRelatedToType));
     }
 
     private void handleRelatedToValue(String value) {
-        WebUI.selectSearchableDropdownIfChanged(dropdownRelatedToValue, value, "title",
-                inputSearchRelatedToValue, selectDropdownRelatedToValue(value));
+        WebUI.selectSearchableDropdownIfChanged(dropdownRelatedToValue, value, "title", inputSearchRelatedToValue, selectDropdownRelatedToValue(value));
     }
 
     private void handleAssignees(TaskDTO dto) {
@@ -252,7 +265,9 @@ public class TaskPage extends BasePage {
     private void fillTaskForm(TaskDTO dto, String projectName, CRMEnum type) {
         handleCheckboxPublic(dto);
         handleCheckboxBillable(dto);
+        handleAttachFiles(dto, type);
         handleProjectName(dto, type);
+        WebUI.scrollToElementAtBottom(buttonSave);
         handleStartDate(dto);
         handleDueDate(dto);
         handlePriority(dto);
@@ -294,7 +309,6 @@ public class TaskPage extends BasePage {
     }
 
     public void verifyTaskDisplayedInList(String taskName) {
-        Assert.assertTrue(WebUI.checkElementExist(itemTaskInList(taskName), 10, 500),
-                "Task is not displayed in the task list.");
+        Assert.assertTrue(WebUI.checkElementExist(itemTaskInList(taskName), 10, 500), "Task is not displayed in the task list.");
     }
 }
