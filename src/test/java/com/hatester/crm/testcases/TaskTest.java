@@ -5,6 +5,9 @@ import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.models.ProjectDTO;
 import com.hatester.crm.models.TaskDTO;
 import com.hatester.crm.pages.*;
+import com.hatester.crm.steps.CustomerSteps;
+import com.hatester.crm.steps.ProjectSteps;
+import com.hatester.crm.steps.TaskSteps;
 import com.hatester.dataproviders.DataProviderFactory;
 import com.hatester.enums.CRMEnum;
 import io.qameta.allure.Epic;
@@ -25,43 +28,21 @@ public class TaskTest extends BaseTest {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
 
-        //add customer
+        // ===== ADD CUSTOMER =====
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyCustomersPageDisplayed();
-        customerPage.clickNewCustomerButton();
-        customerPage.verifyCustomerDetailsTabIsActive();
-
-        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        CustomerSteps customerSteps = new CustomerSteps(customerPage);
+        CustomerDTO cusDTO = customerSteps.addCustomer(customerDTO);
         String customerName = cusDTO.getCompany();
 
-        customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomerByName(customerName);
-        customerPage.verifyCustomerDisplayedInList(customerName);
-
-        //add project
+        // ===== ADD PROJECT =====
         projectPage = customerPage.goToProjectsFromMenu();
-        projectPage.verifyProjectsPageDisplayed();
-        projectPage.clickNewProjectButton();
-        projectPage.verifyAddNewProjectPageDisplayed();
-
-        ProjectDTO proDTO = projectPage.fillProjectFormAndSave(projectDTO, customerName, CRMEnum.ADD);
+        ProjectSteps projectSteps = new ProjectSteps(projectPage);
+        ProjectDTO proDTO = projectSteps.addProject(projectDTO, customerName);
         String projectName = proDTO.getProjectName();
 
-        projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectName);
-        projectPage.verifyProjectDisplayedInList(projectName);
-
-        //add task
+        // ===== ADD TASK =====
         taskPage = projectPage.goToTasksFromMenu();
-        taskPage.verifyTasksPageDisplayed();
-        taskPage.clickNewTaskButton();
-        taskPage.verifyAddNewTaskDialogDisplayed();
-
-        TaskDTO taskDTO1 = taskPage.fillTaskFormAndSave(taskDTO, projectName, CRMEnum.ADD);
-        String taskName = taskDTO1.getTaskName();
-
-        taskPage.clickbuttonCloseTaskDetail(taskName);
-        taskPage.searchTaskByName(taskName);
-        taskPage.verifyTaskDisplayedInList(taskName);
+        TaskSteps taskSteps = new TaskSteps(taskPage);
+        taskSteps.addTask(taskDTO, projectName);
     }
 }

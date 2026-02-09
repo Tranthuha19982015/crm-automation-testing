@@ -23,17 +23,17 @@ public class ProjectPage extends BasePage {
     }
 
     private By projectItemInList(String projectName) {
-        By xpathProject = By.xpath("//table[@id='projects']//a[normalize-space()='" + projectName + "']");
+        By xpathProject = By.xpath("//table[@id='projects']//tr//a[normalize-space()='" + projectName + "']");
         return xpathProject;
     }
 
     private By buttonEditProject(String projectName) {
-        By xpathButtonEdit = By.xpath("(//table[@id='projects']//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Edit']");
+        By xpathButtonEdit = By.xpath("(//table[@id='projects']//tr//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Edit']");
         return xpathButtonEdit;
     }
 
     private By buttonDeleteProject(String projectName) {
-        By xpathButtonDelete = By.xpath("(//table[@id='projects']//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Delete']");
+        By xpathButtonDelete = By.xpath("(//table[@id='projects']//tr//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Delete']");
         return xpathButtonDelete;
     }
 
@@ -263,21 +263,21 @@ public class ProjectPage extends BasePage {
         WebUI.waitForPageLoaded();
         WebUI.clearElementText(inputSearchProjects);
         WebUI.setTextAndKey(inputSearchProjects, projectName, Keys.ENTER);
-        WebUI.sleep(1);
+        WebUI.sleep(1.5);
     }
 
     public void verifyProjectDisplayedInList(String projectName) {
-        Assert.assertTrue(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
+        Assert.assertTrue(WebUI.checkElementExist(rowItemInList(projectName), 10, 500),
                 "Project is not displayed in the project list.");
     }
 
     public void clickEditProjectButton(String projectName) {
-//        WebUI.waitForElementVisible(projectItemInList(projectName));
-//        WebUI.moveToElement(rowItemInList(projectName));
-//        WebUI.sleep(1);
-//        WebUI.clickElement(buttonEditProject(projectName));
+        WebUI.waitForElementVisible(projectItemInList(projectName));
+        WebUI.moveToElement(rowItemInList(projectName));
 
-        WebUI.clickJS(buttonEditProject(projectName));
+        WebUI.clickElement(buttonEditProject(projectName));
+
+//        WebUI.clickJS(buttonEditProject(projectName));
     }
 
     public void verifyEditProjectPageDisplayed() {
@@ -286,12 +286,12 @@ public class ProjectPage extends BasePage {
     }
 
     public void clickDeleteProjectButton(String projectName) {
-//        WebUI.waitForElementVisible(projectItemInList(projectName));
-//        WebUI.moveToElement(rowItemInList(projectName));
-//        WebUI.sleep(1);
-//        WebUI.clickElement(buttonDeleteProject(projectName));
+        WebUI.waitForElementVisible(projectItemInList(projectName));
+        WebUI.moveToElement(rowItemInList(projectName));
 
-        WebUI.clickJS(buttonDeleteProject(projectName));
+        WebUI.clickElement(buttonDeleteProject(projectName));
+
+//        WebUI.clickJS(buttonDeleteProject(projectName));
     }
 
     public void confirmDeleteProject(CRMEnum type) {
@@ -305,12 +305,12 @@ public class ProjectPage extends BasePage {
 
     public void verifyDeleteProjectResult(String projectName, CRMEnum type) {
         if (type == CRMEnum.ACCEPTED) {
-            Assert.assertFalse(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
+            Assert.assertFalse(WebUI.checkElementExist(projectItemInList(projectName), 5, 500),
                     "Project is still displayed after deletion was accepted.");
             return;
         }
         if (type == CRMEnum.DISMISSED) {
-            Assert.assertTrue(WebUI.checkElementExist(projectItemInList(projectName), 10, 500),
+            Assert.assertTrue(WebUI.checkElementExist(projectItemInList(projectName), 5, 500),
                     "Project is not displayed after deletion was dismissed.");
         }
     }

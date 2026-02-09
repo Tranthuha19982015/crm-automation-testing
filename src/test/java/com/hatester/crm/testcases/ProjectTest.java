@@ -7,6 +7,8 @@ import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
 import com.hatester.crm.pages.ProjectPage;
+import com.hatester.crm.steps.CustomerSteps;
+import com.hatester.crm.steps.ProjectSteps;
 import com.hatester.dataproviders.DataProviderFactory;
 import com.hatester.enums.CRMEnum;
 import io.qameta.allure.Epic;
@@ -26,31 +28,16 @@ public class ProjectTest extends BaseTest {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
 
-        //Add Customer
+        // ===== ADD CUSTOMER =====
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyCustomersPageDisplayed();
-        customerPage.clickNewCustomerButton();
-        customerPage.verifyCustomerDetailsTabIsActive();
-
-        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        CustomerSteps customerSteps = new CustomerSteps(customerPage);
+        CustomerDTO cusDTO = customerSteps.addCustomer(customerDTO);
         String customerName = cusDTO.getCompany();
 
-        customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomerByName(customerName);
-        customerPage.verifyCustomerDisplayedInList(customerName);
-
-        //Add project
+        // ===== ADD PROJECT =====
         projectPage = customerPage.goToProjectsFromMenu();
-        projectPage.verifyProjectsPageDisplayed();
-        projectPage.clickNewProjectButton();
-        projectPage.verifyAddNewProjectPageDisplayed();
-
-        ProjectDTO project = projectPage.fillProjectFormAndSave(projectDTO, customerName, CRMEnum.ADD);
-        String projectName = project.getProjectName();
-
-        projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectName);
-        projectPage.verifyProjectDisplayedInList(projectName);
+        ProjectSteps projectSteps = new ProjectSteps(projectPage);
+        ProjectDTO proDTO = projectSteps.addProject(projectDTO, customerName);
     }
 
     @Test(dataProvider = "editProjectData", dataProviderClass = DataProviderFactory.class)
@@ -58,47 +45,22 @@ public class ProjectTest extends BaseTest {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
 
-        //Add Customer
+        // ===== ADD CUSTOMER =====
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyCustomersPageDisplayed();
-        customerPage.clickNewCustomerButton();
-        customerPage.verifyCustomerDetailsTabIsActive();
+        CustomerSteps customerSteps = new CustomerSteps(customerPage);
 
-        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        CustomerDTO cusDTO = customerSteps.addCustomer(customerDTO);
         String customerName = cusDTO.getCompany();
 
-        customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomerByName(customerName);
-        customerPage.verifyCustomerDisplayedInList(customerName);
-
-
-        //Add project
+        // ===== ADD PROJECT =====
         projectPage = customerPage.goToProjectsFromMenu();
-        projectPage.verifyProjectsPageDisplayed();
-        projectPage.clickNewProjectButton();
-        projectPage.verifyAddNewProjectPageDisplayed();
+        ProjectSteps projectSteps = new ProjectSteps(projectPage);
 
-        ProjectDTO project = projectPage.fillProjectFormAndSave(projectAdd, customerName, CRMEnum.ADD);
-        String projectName = project.getProjectName();
+        ProjectDTO proDTO = projectSteps.addProject(projectAdd, customerName);
+        String projectName = proDTO.getProjectName();
 
-        projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectName);
-        projectPage.verifyProjectDisplayedInList(projectName);
-
-
-        //Edit project
-        projectPage.clickEditProjectButton(projectName);
-        projectPage.verifyEditProjectPageDisplayed();
-
-        projectPage.fillProjectFormAndSave(projectEdit, customerName, CRMEnum.EDIT);
-
-        if (projectEdit.isUpdateProjectName()) {
-            projectName = projectEdit.getProjectName();
-        }
-
-        projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectName);
-        projectPage.verifyProjectDisplayedInList(projectName);
+        // ===== EDIT PROJECT =====
+        projectSteps.editProject(projectName, projectEdit, customerName);
     }
 
     @Test(dataProvider = "projectBaseData", dataProviderClass = DataProviderFactory.class)
@@ -106,37 +68,19 @@ public class ProjectTest extends BaseTest {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
 
-        //Add Customer
+        // ===== ADD CUSTOMER =====
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyCustomersPageDisplayed();
-        customerPage.clickNewCustomerButton();
-        customerPage.verifyCustomerDetailsTabIsActive();
-
-        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
+        CustomerSteps customerSteps = new CustomerSteps(customerPage);
+        CustomerDTO cusDTO = customerSteps.addCustomer(customerDTO);
         String customerName = cusDTO.getCompany();
 
-        customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomerByName(customerName);
-        customerPage.verifyCustomerDisplayedInList(customerName);
-
-
-        //Add project
+        // ===== ADD PROJECT =====
         projectPage = customerPage.goToProjectsFromMenu();
-        projectPage.verifyProjectsPageDisplayed();
-        projectPage.clickNewProjectButton();
-        projectPage.verifyAddNewProjectPageDisplayed();
+        ProjectSteps projectSteps = new ProjectSteps(projectPage);
+        ProjectDTO proDTO = projectSteps.addProject(projectDTO, customerName);
+        String projectName = proDTO.getProjectName();
 
-        ProjectDTO project = projectPage.fillProjectFormAndSave(projectDTO, customerName, CRMEnum.ADD);
-        String projectName = project.getProjectName();
-
-        projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectName);
-        projectPage.verifyProjectDisplayedInList(projectName);
-
-        //Delete project
-        projectPage.clickDeleteProjectButton(projectName);
-        projectPage.confirmDeleteProject(CRMEnum.ACCEPTED);
-        projectPage.searchProjectByName(projectName);
-        projectPage.verifyDeleteProjectResult(projectName, CRMEnum.ACCEPTED);
+        // ===== DELETE PROJECT =====
+        projectSteps.deleteProject(projectName, CRMEnum.ACCEPTED);
     }
 }

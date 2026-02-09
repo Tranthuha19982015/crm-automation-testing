@@ -1,6 +1,7 @@
 package com.hatester.crm.testcases;
 
 import com.hatester.commons.BaseTest;
+import com.hatester.crm.steps.CustomerSteps;
 import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
@@ -23,15 +24,7 @@ public class CustomerTest extends BaseTest {
         dashboardPage = loginPage.login();
 
         customerPage = dashboardPage.goToCustomersFromMenu();
-        customerPage.verifyCustomersPageDisplayed();
-        customerPage.clickNewCustomerButton();
-        customerPage.verifyCustomerDetailsTabIsActive();
-
-        CustomerDTO cusDTO = customerPage.fillCustomerFormAndSave(customerDTO);
-        String customerName = cusDTO.getCompany();
-
-        customerPage.goToCustomersFromMenu();
-        customerPage.searchCustomerByName(customerName);
-        customerPage.verifyCustomerDisplayedInList(customerName);
+        CustomerSteps customerSteps = new CustomerSteps(customerPage);
+        customerSteps.addCustomer(customerDTO);
     }
 }

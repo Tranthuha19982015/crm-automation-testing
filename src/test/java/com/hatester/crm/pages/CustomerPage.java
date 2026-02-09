@@ -141,6 +141,7 @@ public class CustomerPage extends BasePage {
         WebUI.waitForPageLoaded();
         WebUI.clickElement(inputSearchCustomers);
         WebUI.setText(inputSearchCustomers, company);
+        WebUI.sleep(1);
     }
 
     public void verifyCustomerDisplayedInList(String company) {
