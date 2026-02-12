@@ -3,6 +3,8 @@ package com.hatester.crm.pages;
 import com.hatester.commons.BasePage;
 import com.hatester.crm.models.ProjectDTO;
 import com.hatester.enums.CRMEnum;
+import com.hatester.enums.MatchType;
+import com.hatester.enums.ProjectTableColumn;
 import com.hatester.keywords.WebUI;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
@@ -36,6 +38,9 @@ public class ProjectPage extends BasePage {
         By xpathButtonDelete = By.xpath("(//table[@id='projects']//tr//a[normalize-space()='" + projectName + "'])/following-sibling::div//a[normalize-space()='Delete']");
         return xpathButtonDelete;
     }
+
+    private By tableRows = By.xpath("//table[@id='projects']//tbody//tr");
+    private By tableCell = By.xpath("//table[@id='projects']//tbody//tr[%s]//td[%s]");
 
     //Add/edit project page
     private By headerAddNewProject = By.xpath("//h4[normalize-space()='Add new project']");
@@ -259,16 +264,52 @@ public class ProjectPage extends BasePage {
         return projectDTO;
     }
 
-    public void searchProjectByName(String projectName) {
+    public void searchProjectInTable(String keyword) {
         WebUI.waitForPageLoaded();
         WebUI.clearElementText(inputSearchProjects);
-        WebUI.setTextAndKey(inputSearchProjects, projectName, Keys.ENTER);
+        WebUI.setTextAndKey(inputSearchProjects, keyword, Keys.ENTER);
         WebUI.sleep(1.5);
+        WebUI.waitForPageLoaded();
     }
 
     public void verifyProjectDisplayedInList(String projectName) {
         Assert.assertTrue(WebUI.checkElementExist(rowItemInList(projectName), 10, 500),
                 "Project is not displayed in the project list.");
+    }
+
+    private By getTableRows() {
+        return tableRows;
+    }
+
+    private By getTableCellTemplate() {
+        return tableCell;
+    }
+
+    public void verifyProjectColumnsInTableContains(ProjectTableColumn column, String searchValue) {
+        WebUI.verifyTableColumnValues(getTableRows(),
+                getTableCellTemplate(),
+                column.getIndex(),
+                searchValue,
+                column.getColumnName(),
+                MatchType.CONTAINS);
+    }
+
+    public void verifyProjectColumnsInTableEquals(ProjectTableColumn column, String searchValue) {
+        WebUI.verifyTableColumnValues(getTableRows(),
+                getTableCellTemplate(),
+                column.getIndex(),
+                searchValue,
+                column.getColumnName(),
+                MatchType.EQUALS);
+    }
+
+    public void verifyProjectDataInTable(ProjectDTO proDTO, String customer) {
+        verifyProjectColumnsInTableEquals(ProjectTableColumn.PROJECT_NAME, proDTO.getProjectName());
+        verifyProjectColumnsInTableEquals(ProjectTableColumn.CUSTOMER, customer);
+        verifyProjectColumnsInTableEquals(ProjectTableColumn.TAGS, String.join("", proDTO.getTags()));
+        verifyProjectColumnsInTableEquals(ProjectTableColumn.START_DATE, proDTO.getStartDate());
+        verifyProjectColumnsInTableEquals(ProjectTableColumn.DEADLINE, proDTO.getDeadline());
+        verifyProjectColumnsInTableEquals(ProjectTableColumn.STATUS, proDTO.getStatus());
     }
 
     public void clickEditProjectButton(String projectName) {

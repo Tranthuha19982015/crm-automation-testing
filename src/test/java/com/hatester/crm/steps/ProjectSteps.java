@@ -20,8 +20,9 @@ public class ProjectSteps {
         String projectName = proDTO.getProjectName();
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(projectName);
+        projectPage.searchProjectInTable(projectName);
         projectPage.verifyProjectDisplayedInList(projectName);
+        projectPage.verifyProjectDataInTable(proDTO, customer);
 
         return proDTO;
     }
@@ -30,21 +31,22 @@ public class ProjectSteps {
         projectPage.clickEditProjectButton(project);
         projectPage.verifyEditProjectPageDisplayed();
 
-        ProjectDTO proDTO = projectPage.fillProjectFormAndSave(projectEdit, customer, CRMEnum.EDIT);
+        projectPage.fillProjectFormAndSave(projectEdit, customer, CRMEnum.EDIT);
+        String finalProjectName = projectEdit.isUpdateProjectName() ? projectEdit.getProjectName() : project;
 
-        if (projectEdit.isUpdateProjectName()) {
-            project = projectEdit.getProjectName();
-        }
+        // đảm bảo DTO expected mang đúng name cuối cùng
+        projectEdit.setProjectName(finalProjectName);
 
         projectPage.goToProjectsFromMenu();
-        projectPage.searchProjectByName(project);
-        projectPage.verifyProjectDisplayedInList(project);
+        projectPage.searchProjectInTable(finalProjectName);
+        projectPage.verifyProjectDisplayedInList(finalProjectName);
+        projectPage.verifyProjectDataInTable(projectEdit, customer);
     }
 
     public void deleteProject(String projectName, CRMEnum delete) {
         projectPage.clickDeleteProjectButton(projectName);
         projectPage.confirmDeleteProject(delete);
-        projectPage.searchProjectByName(projectName);
+        projectPage.searchProjectInTable(projectName);
         projectPage.verifyDeleteProjectResult(projectName, delete);
     }
 }
