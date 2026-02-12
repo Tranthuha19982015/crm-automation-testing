@@ -1,6 +1,7 @@
 package com.hatester.keywords;
 
 import com.hatester.drivers.DriverManager;
+import com.hatester.enums.MatchType;
 import com.hatester.reports.AllureManager;
 import com.hatester.utils.DataUtil;
 import com.hatester.utils.LogUtils;
@@ -471,7 +472,7 @@ public class WebUI {
         js.executeScript("window.scrollTo(" + X + "," + Y + ");");
     }
 
-    @Step("Set slider value to: {2)%")
+    @Step("Set slider value to: {2}%")
     public static void setSliderValue(By hiddenInputBy, By sliderHandleBy, int percent) {
         JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
 
@@ -740,6 +741,7 @@ public class WebUI {
         setText(inputSearchDropdown, expected);
         sleep(0.5);
         sendTextByAction(inputSearchDropdown, " ");
+        waitForElementToBeClickable(optionDropdown, 20);
         clickElement(optionDropdown);
     }
 
@@ -871,6 +873,42 @@ public class WebUI {
         for (int i = 0; i < files.size(); i++) {
             String fullPath = baseUploadPath + files.get(i);
             setText(fileInputLocator.apply(i), fullPath);
+        }
+    }
+
+    @Step("Verify column [{4}] with expected value '{3}' using condition '{5}'")
+    public static void verifyTableColumnValues(By rowLocator, By cellLocatorTemplate, int columnIndex,
+                                               String expectedValue, String columnName, MatchType matchType) {
+        LogUtils.info("Verify column [" + columnName + "] with expected value '" + expectedValue + "' using condition '" + matchType + "'");
+
+        //Xác định số dòng của table sau khi search
+        List<WebElement> rows = getWebElements(rowLocator);
+        int totalRows = rows.size();
+
+        LogUtils.info("Total rows found in table: " + totalRows);
+        Assert.assertTrue(totalRows > 0, "Table has no data");
+
+        //Duyệt từng dòng
+        for (int i = 1; i <= totalRows; i++) {
+            String rawXpath = cellLocatorTemplate.toString().replace("By.xpath: ", "");
+            By cellLocator = By.xpath(String.format(rawXpath, i, columnIndex));
+
+            WebElement cell = getWebElement(cellLocator);
+            scrollToElementAtBottom(cell);
+
+            String actualValue = getElementText(cellLocator).trim();
+
+            LogUtils.info("Row " + i + " | Expected: " + expectedValue + " | Actual: " + actualValue);
+            AllureManager.saveTextLog("Row " + i + " | Expected: " + expectedValue + " | Actual: " + actualValue);
+
+            //Switch expression (Java 14+) /// Dấu -> thay thế hoàn toàn break
+            //Trả về một giá trị và gán trực tiếp vào result
+            boolean result = switch (matchType) {
+                case CONTAINS -> actualValue.toUpperCase().contains(expectedValue.toUpperCase());
+                case EQUALS -> actualValue.equalsIgnoreCase(expectedValue);
+            };
+
+            Assert.assertTrue(result, "Row " + i + " | Column [" + columnName + "] | Expected [" + expectedValue + "] not matched.");
         }
     }
 }
