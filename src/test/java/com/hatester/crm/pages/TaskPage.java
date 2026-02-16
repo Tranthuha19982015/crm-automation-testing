@@ -1,7 +1,6 @@
 package com.hatester.crm.pages;
 
 import com.hatester.commons.BasePage;
-import com.hatester.config.FrameworkConfig;
 import com.hatester.crm.models.TaskDTO;
 import com.hatester.enums.CRMEnum;
 import com.hatester.helpers.SystemHelper;
@@ -10,7 +9,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.testng.Assert;
 
-import java.util.List;
 import java.util.function.Function;
 
 import static com.hatester.config.FrameworkConfig.getUploadFilePath;
@@ -294,7 +292,11 @@ public class TaskPage extends BasePage {
         return dto;
     }
 
-    public void clickbuttonCloseTaskDetail(String taskName) {
+    public void closeSuccessAlert(){
+        clickIconCloseAlert(iconCloseAlertSuccess);
+    }
+
+    public void clickCloseTaskDetailButton(String taskName) {
         WebUI.waitForPageLoaded();
         WebUI.clickElement(buttonCloseTaskDetail(taskName));
     }

@@ -19,7 +19,8 @@ public class TaskSteps {
         TaskDTO taskDTO1 = taskPage.fillTaskFormAndSave(taskDTO, projectName, CRMEnum.ADD);
         String taskName = taskDTO1.getTaskName();
 
-        taskPage.clickbuttonCloseTaskDetail(taskName);
+        taskPage.closeSuccessAlert();
+        taskPage.clickCloseTaskDetailButton(taskName);
         taskPage.searchTaskByName(taskName);
         taskPage.verifyTaskDisplayedInList(taskName);
 
