@@ -40,22 +40,32 @@ public class AllureListener implements TestLifecycleListener {
 
     @Override
     public void beforeTestStop(TestResult result) {
-        if (isScreenshotPassed()) {
-            if (result.getStatus().equals(Status.PASSED)) {
-                if (DriverManager.getDriver() != null) {
-                    Allure.addAttachment(result.getName() + "_Passed_Screenshot",
-                            new ByteArrayInputStream(((TakesScreenshot) DriverManager.getDriver()).getScreenshotAs(OutputType.BYTES)));
-                }
-            }
+        Status status = result.getStatus();
+
+        if (status == null) {
+            return;  // tránh NPE khi Allure chưa set status
         }
-        if (isScreenshotFailed()) {
-            if (result.getStatus().equals(Status.FAILED)) {
-                if (DriverManager.getDriver() != null) {
-                    Allure.addAttachment(result.getName() + "_Failed_Screenshot",
-                            new ByteArrayInputStream(((TakesScreenshot) DriverManager.getDriver()).getScreenshotAs(OutputType.BYTES)));
-                }
-            }
+
+        if (isScreenshotPassed() && Status.PASSED.equals(status)) {
+            attachScreenshot(result, "Passed");
         }
+
+        if (isScreenshotPassed() && Status.FAILED.equals(status)) {
+            attachScreenshot(result, "Failed");
+        }
+    }
+
+    private void attachScreenshot(TestResult result, String type) {
+        if (DriverManager.getDriver() == null) {
+            return;
+        }
+        Allure.addAttachment(
+                result.getName() + "_" + type + "_Screenshot",
+                new ByteArrayInputStream(
+                        ((TakesScreenshot) DriverManager.getDriver())
+                                .getScreenshotAs(OutputType.BYTES)
+                )
+        );
     }
 
     @Override
