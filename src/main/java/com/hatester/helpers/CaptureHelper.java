@@ -81,6 +81,11 @@ public class CaptureHelper extends ScreenRecorder {
     }
 
     public static void takeScreenshot(String screenshotName) {
+        if (DriverManager.getDriver() == null) {
+            LogUtils.error("Driver is null — cannot take screenshot.");
+            return;
+        }
+
         TakesScreenshot ts = (TakesScreenshot) DriverManager.getDriver();
         File source = ts.getScreenshotAs(OutputType.FILE);
 
