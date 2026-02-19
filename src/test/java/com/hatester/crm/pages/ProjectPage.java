@@ -281,13 +281,13 @@ public class ProjectPage extends BasePage {
         return tableRows;
     }
 
-    private By getTableCellTemplate() {
+    private By getTableCell() {
         return tableCell;
     }
 
     public void verifyProjectColumnsInTableContains(ProjectTableColumn column, String searchValue) {
         WebUI.verifyTableColumnValues(getTableRows(),
-                getTableCellTemplate(),
+                getTableCell(),
                 column.getIndex(),
                 searchValue,
                 column.getColumnName(),
@@ -296,7 +296,7 @@ public class ProjectPage extends BasePage {
 
     public void verifyProjectColumnsInTableEquals(ProjectTableColumn column, String searchValue) {
         WebUI.verifyTableColumnValues(getTableRows(),
-                getTableCellTemplate(),
+                getTableCell(),
                 column.getIndex(),
                 searchValue,
                 column.getColumnName(),
