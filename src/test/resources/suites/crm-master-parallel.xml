@@ -7,9 +7,9 @@
 <!--    </listeners>-->
 
     <suite-files>
-        <suite-file path="parallel-login.xml" />
-        <suite-file path="parallel-customers.xml" />
-        <suite-file path="parallel-projects.xml"/>
+        <suite-file path="crm-login-parallel.xml" />
+        <suite-file path="crm-customers-parallel.xml" />
+        <suite-file path="crm-projects-parallel.xml"/>
     </suite-files>
 
 </suite>
