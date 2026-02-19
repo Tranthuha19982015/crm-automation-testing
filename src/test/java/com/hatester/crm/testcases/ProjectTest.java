@@ -11,6 +11,7 @@ import com.hatester.crm.steps.CustomerSteps;
 import com.hatester.crm.steps.ProjectSteps;
 import com.hatester.dataproviders.DataProviderFactory;
 import com.hatester.enums.CRMEnum;
+import com.hatester.enums.ProjectTableColumn;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.testng.annotations.Test;
@@ -82,5 +83,32 @@ public class ProjectTest extends BaseTest {
 
         // ===== DELETE PROJECT =====
         projectSteps.deleteProject(projectName, CRMEnum.ACCEPTED);
+    }
+
+    @Test(enabled = true)
+    public void testProjectTableSearchFiltersByMultipleColumns() {
+        loginPage = new LoginPage();
+        dashboardPage = loginPage.login();
+        projectPage = dashboardPage.goToProjectsFromMenu();
+
+        //search by keyword
+        String keyword = "19";
+        projectPage.searchProjectInTable(keyword);
+        projectPage.verifyAllProjectRowsContainSearchValue(keyword);
+
+        //search by project name
+        String projectName = "[AUTO_HT] project";
+        projectPage.searchProjectInTable(projectName);
+        projectPage.verifyProjectColumnsInTableContains(ProjectTableColumn.PROJECT_NAME, projectName);
+
+        //search by customer
+        String customer = "[AUTO_HT] company";
+        projectPage.searchProjectInTable(customer);
+        projectPage.verifyProjectColumnsInTableContains(ProjectTableColumn.CUSTOMER, customer);
+
+        //search by tag
+        String tag = "htest12";
+        projectPage.searchProjectInTable(tag);
+        projectPage.verifyProjectColumnsInTableContains(ProjectTableColumn.TAGS, tag);
     }
 }

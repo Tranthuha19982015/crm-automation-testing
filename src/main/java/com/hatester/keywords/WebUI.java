@@ -911,4 +911,26 @@ public class WebUI {
             Assert.assertTrue(result, "Row " + i + " | Column [" + columnName + "] | Expected [" + expectedValue + "] not matched.");
         }
     }
+
+    @Step("Verify all rows contain search value '{1}'")
+    public static void verifyAllRowsContainSearchValue(By rowLocator, String searchValue) {
+        List<WebElement> rows = getWebElements(rowLocator);
+        int totalRows = rows.size();
+
+        LogUtils.info("Total rows found: " + totalRows);
+        Assert.assertTrue(totalRows > 0, "Table has no data after search");
+
+        for (int i = 0; i < totalRows; i++) {
+            WebElement row = rows.get(i);
+            scrollToElementAtBottom(row);
+
+            String rowText = row.getText().trim();
+
+            LogUtils.info("Row " + (i + 1) + " | Row Text: " + rowText);
+            AllureManager.saveTextLog("Row " + (i + 1) + " | Row Text: " + rowText);
+
+            boolean result = rowText.toUpperCase().contains(searchValue.toUpperCase());
+            Assert.assertTrue(result, "Row " + (i + 1) + " does not contain search value: " + searchValue);
+        }
+    }
 }

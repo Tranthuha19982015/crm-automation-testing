@@ -303,6 +303,10 @@ public class ProjectPage extends BasePage {
                 MatchType.EQUALS);
     }
 
+    public void verifyAllProjectRowsContainSearchValue(String searchValue) {
+        WebUI.verifyAllRowsContainSearchValue(getTableRows(), searchValue);
+    }
+
     public void verifyProjectDataInTable(ProjectDTO proDTO, String customer) {
         verifyProjectColumnsInTableEquals(ProjectTableColumn.PROJECT_NAME, proDTO.getProjectName());
         verifyProjectColumnsInTableEquals(ProjectTableColumn.CUSTOMER, customer);
