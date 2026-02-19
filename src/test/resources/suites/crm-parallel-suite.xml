@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="CRM Parallel Execution Suite" verbose="1">
+    <test name="Parallel Method Execution" parallel="methods" thread-count="4">
+        <classes>
+            <class name="com.hatester.crm.testcases.LoginTest"/>
+            <class name="com.hatester.crm.testcases.CustomerTest"/>
+            <class name="com.hatester.crm.testcases.ProjectTest"/>
+            <class name="com.hatester.crm.testcases.TaskTest"/>
+        </classes>
+    </test>
+</suite>
