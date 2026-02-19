@@ -3,6 +3,8 @@ package com.hatester.crm.pages;
 import com.hatester.commons.BasePage;
 import com.hatester.crm.models.TaskDTO;
 import com.hatester.enums.CRMEnum;
+import com.hatester.enums.MatchType;
+import com.hatester.enums.TaskTableColumn;
 import com.hatester.helpers.SystemHelper;
 import com.hatester.keywords.WebUI;
 import org.openqa.selenium.By;
@@ -33,6 +35,9 @@ public class TaskPage extends BasePage {
         By xpathButtonDelete = By.xpath("((//table[@id='tasks']/descendant::a[normalize-space()='" + taskName + "'])/following-sibling::div)//a[normalize-space()='Delete']");
         return xpathButtonDelete;
     }
+
+    private By tableRows = By.xpath("//table[@id='tasks']//tbody//tr");
+    private By tableCell = By.xpath("//table[@id='tasks']//tbody//tr[%s]//td[%s]");
 
     //add new task page
     private By headerAddNewTask = By.xpath("//h4[@id='myModalLabel']");
@@ -301,16 +306,41 @@ public class TaskPage extends BasePage {
         WebUI.clickElement(buttonCloseTaskDetail(taskName));
     }
 
-    public void searchTaskByName(String taskName) {
+    public void searchTaskInTable(String keyword) {
         WebUI.waitForPageLoaded();
-
         WebUI.clearElementText(inputSearchTasks);
-        WebUI.setTextAndKey(inputSearchTasks, taskName, Keys.ENTER);
-
-        WebUI.sleep(1);
+        WebUI.setTextAndKey(inputSearchTasks, keyword, Keys.ENTER);
+        WebUI.sleep(1.5);
+        WebUI.waitForPageLoaded();
     }
 
     public void verifyTaskDisplayedInList(String taskName) {
         Assert.assertTrue(WebUI.checkElementExist(itemTaskInList(taskName), 10, 500), "Task is not displayed in the task list.");
+    }
+
+    private By getTableRows() {
+        return tableRows;
+    }
+
+    private By getTableCell() {
+        return tableCell;
+    }
+
+    public void verifyTaskColumnsInTableEquals(TaskTableColumn column, String searchValue) {
+        WebUI.verifyTableColumnValues(getTableRows(), getTableCell(), column.getIndex(),
+                searchValue, column.getColumnName(), MatchType.EQUALS);
+    }
+
+    public void verifyTaskColumnsInTableContains(TaskTableColumn column, String searchValue) {
+        WebUI.verifyTableColumnValues(getTableRows(), getTableCell(), column.getIndex(),
+                searchValue, column.getColumnName(), MatchType.CONTAINS);
+    }
+
+    public void verifyTaskDataInTable(TaskDTO taskDTO) {
+        verifyTaskColumnsInTableContains(TaskTableColumn.NAME, taskDTO.getTaskName());
+        verifyTaskColumnsInTableEquals(TaskTableColumn.START_DATE, taskDTO.getStartDate());
+        verifyTaskColumnsInTableEquals(TaskTableColumn.DUE_DATE, taskDTO.getDueDate());
+        verifyTaskColumnsInTableEquals(TaskTableColumn.TAGS, String.join("", taskDTO.getTags()));
+        verifyTaskColumnsInTableEquals(TaskTableColumn.PRIORITY, taskDTO.getPriority());
     }
 }

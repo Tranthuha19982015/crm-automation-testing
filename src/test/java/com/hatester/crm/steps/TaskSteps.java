@@ -21,8 +21,9 @@ public class TaskSteps {
 
         taskPage.closeSuccessAlert();
         taskPage.clickCloseTaskDetailButton(taskName);
-        taskPage.searchTaskByName(taskName);
+        taskPage.searchTaskInTable(taskName);
         taskPage.verifyTaskDisplayedInList(taskName);
+        taskPage.verifyTaskDataInTable(taskDTO1);
 
         return taskDTO;
     }
