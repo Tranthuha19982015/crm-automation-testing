@@ -1,13 +1,7 @@
 package com.hatester.dataproviders;
 
-import com.hatester.crm.mappers.CustomerMapper;
-import com.hatester.crm.mappers.LoginMapper;
-import com.hatester.crm.mappers.ProjectMapper;
-import com.hatester.crm.mappers.TaskMapper;
-import com.hatester.crm.models.CustomerDTO;
-import com.hatester.crm.models.LoginDTO;
-import com.hatester.crm.models.ProjectDTO;
-import com.hatester.crm.models.TaskDTO;
+import com.hatester.crm.mappers.*;
+import com.hatester.crm.models.*;
 import com.hatester.helpers.ExcelHelper;
 import org.testng.annotations.DataProvider;
 
@@ -134,6 +128,20 @@ public class DataProviderFactory {
             finalData[indexTCs][2] = editProject;
 
             indexTCs++;
+        }
+        return finalData;
+    }
+
+    @DataProvider(name = "searchProject")
+    public Object[][] searchProject() {
+        ExcelHelper excel = new ExcelHelper();
+        Object[][] projectSearchData = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECT_SEARCH, 1, 1);
+
+        Object[][] finalData = new Object[projectSearchData.length][1];
+        for (int i = 0; i < projectSearchData.length; i++) {
+            Map<String, String> projectRow = (Map<String, String>) projectSearchData[i][0];
+            ProjectSearchDTO projectSearchDTO = ProjectSearchMapper.projectSearchMapper(projectRow);
+            finalData[i][0] = projectSearchDTO;
         }
         return finalData;
     }

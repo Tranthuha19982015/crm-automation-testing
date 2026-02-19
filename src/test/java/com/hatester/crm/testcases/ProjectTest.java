@@ -3,6 +3,7 @@ package com.hatester.crm.testcases;
 import com.hatester.commons.BaseTest;
 import com.hatester.crm.models.CustomerDTO;
 import com.hatester.crm.models.ProjectDTO;
+import com.hatester.crm.models.ProjectSearchDTO;
 import com.hatester.crm.pages.CustomerPage;
 import com.hatester.crm.pages.DashboardPage;
 import com.hatester.crm.pages.LoginPage;
@@ -85,29 +86,29 @@ public class ProjectTest extends BaseTest {
         projectSteps.deleteProject(projectName, CRMEnum.ACCEPTED);
     }
 
-    @Test(enabled = true)
-    public void testProjectTableSearchFiltersByMultipleColumns() {
+    @Test(dataProvider = "searchProject", dataProviderClass = DataProviderFactory.class)
+    public void testProjectTableSearchFiltersByMultipleColumns(ProjectSearchDTO proDTO) {
         loginPage = new LoginPage();
         dashboardPage = loginPage.login();
         projectPage = dashboardPage.goToProjectsFromMenu();
 
         //search by keyword
-        String keyword = "19";
+        String keyword = proDTO.getKeyword();
         projectPage.searchProjectInTable(keyword);
         projectPage.verifyAllProjectRowsContainSearchValue(keyword);
 
         //search by project name
-        String projectName = "[AUTO_HT] project";
+        String projectName = proDTO.getProject();
         projectPage.searchProjectInTable(projectName);
         projectPage.verifyProjectColumnsInTableContains(ProjectTableColumn.PROJECT_NAME, projectName);
 
         //search by customer
-        String customer = "[AUTO_HT] company";
+        String customer = proDTO.getCustomer();
         projectPage.searchProjectInTable(customer);
         projectPage.verifyProjectColumnsInTableContains(ProjectTableColumn.CUSTOMER, customer);
 
         //search by tag
-        String tag = "htest12";
+        String tag = proDTO.getTag();
         projectPage.searchProjectInTable(tag);
         projectPage.verifyProjectColumnsInTableContains(ProjectTableColumn.TAGS, tag);
     }
