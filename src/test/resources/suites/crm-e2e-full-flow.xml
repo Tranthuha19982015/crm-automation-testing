@@ -1,0 +1,28 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="CRM E2E Full Flow Suite" verbose="1">
+    <test name="End-to-End Business Flow">
+        <classes>
+            <class name="com.hatester.crm.testcases.LoginTest">
+                <methods>
+                    <include name="testLoginSuccess"/>
+                </methods>
+            </class>
+            <class name="com.hatester.crm.testcases.CustomerTest">
+                <methods>
+                    <include name="testAddCustomer"/>
+                </methods>
+            </class>
+            <class name="com.hatester.crm.testcases.ProjectTest">
+                <methods>
+                    <include name="testAddProject"/>
+                </methods>
+            </class>
+            <class name="com.hatester.crm.testcases.TaskTest">
+                <methods>
+                    <include name="testAddTask"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
