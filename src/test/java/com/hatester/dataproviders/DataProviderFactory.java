@@ -105,7 +105,7 @@ public class DataProviderFactory {
     public Object[][] editProject() {
         ExcelHelper excel = new ExcelHelper();
         Object[][] customerMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 1);
-        Object[][] projectMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, 1, 4);
+        Object[][] projectMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_PROJECTS, 1, 2);
 
         int totalRow = projectMap.length;
         int totalTestcase = totalRow / 2;
