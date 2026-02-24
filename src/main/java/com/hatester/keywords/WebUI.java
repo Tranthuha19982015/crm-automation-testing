@@ -479,6 +479,23 @@ public class WebUI {
         WebElement hiddenInput = getWebElement(hiddenInputBy);
         WebElement sliderHandle = getWebElement(sliderHandleBy);
 
+        // 1. Clamp theo min/max nếu có
+        String minAttr = hiddenInput.getAttribute("min");
+        String maxAttr = hiddenInput.getAttribute("max");
+
+        int min = StringUtils.isNotBlank(minAttr) ? Integer.parseInt(minAttr) : 0;
+        int max = StringUtils.isNotBlank(maxAttr) ? Integer.parseInt(maxAttr) : 100;
+
+        percent = Math.max(min, Math.min(percent, max));  //ép giá trị vào khoảng hợp lệ [min,max]
+
+        // 2. Check current value (QUAN TRỌNG khi EDIT)
+        String currentValue = hiddenInput.getAttribute("value");
+        if (String.valueOf(percent).equals(currentValue)) {
+            LogUtils.info("Slider already at value: " + percent + "%. Skip update.");
+            return;
+        }
+
+        // 3. Set value + trigger đầy đủ event
         js.executeScript(
                 "arguments[0].value = arguments[2];" +
                         "arguments[1].style.left = arguments[2] + '%';" +
@@ -492,7 +509,6 @@ public class WebUI {
         if (isScreenshotAllSteps()) {
             AllureManager.saveScreenshotPNG();
         }
-        AllureManager.saveTextLog("Set slider value to: " + percent + "%");
     }
 
     @Step("Click on element: {0}")
@@ -873,6 +889,20 @@ public class WebUI {
         for (int i = 0; i < files.size(); i++) {
             String fullPath = baseUploadPath + files.get(i);
             setText(fileInputLocator.apply(i), fullPath);
+        }
+    }
+
+    public static void setSlider(By inputHidden, By slider, String expected) {
+        if (StringUtils.isBlank(expected)) {
+            return;
+        }
+
+        try {
+            int percent = Integer.parseInt(expected.trim());
+            setSliderValue(inputHidden, slider, percent);
+        } catch (NumberFormatException e) {
+            LogUtils.error("Invalid slider value: " + expected);
+            throw e;
         }
     }
 

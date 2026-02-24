@@ -156,12 +156,7 @@ public class ProjectPage extends BasePage {
 
         //set progress khi checkbox OFF (không tích)
         if (!expected) {
-            String progress = dto.getProgress();
-            if (StringUtils.isBlank(progress)) {
-                return;
-            }
-
-            WebUI.setSliderValue(inputHiddenProgress, sliderProgress, Integer.parseInt(progress));
+            WebUI.setSlider(inputHiddenProgress, sliderProgress, dto.getProgress());
         }
     }
 
