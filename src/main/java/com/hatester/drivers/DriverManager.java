@@ -3,7 +3,7 @@ package com.hatester.drivers;
 import org.openqa.selenium.WebDriver;
 
 public class DriverManager {
-    public static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
     private DriverManager() {
     }
