@@ -12,12 +12,14 @@ public class DriverManager {
         return driver.get();
     }
 
-    public static void setDriver(WebDriver driver) {
-        DriverManager.driver.set(driver);
+    public static void initDriver() {
+        driver.set(DriverFactory.createDriver());
     }
 
     public static void quitDriver() {
-        driver.get().quit();
-        driver.remove();
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
     }
 }
