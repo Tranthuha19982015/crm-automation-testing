@@ -123,6 +123,10 @@ public class FrameworkConfig {
         return getBoolean("SCREENSHOT_SKIPPED");
     }
 
+    public static boolean isScreenshotBroken() {
+        return getBoolean("SCREENSHOT_BROKEN");
+    }
+
     public static boolean isVideoRecord() {
         return getBoolean("VIDEO_RECORD");
     }
