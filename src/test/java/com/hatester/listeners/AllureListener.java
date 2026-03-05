@@ -50,8 +50,16 @@ public class AllureListener implements TestLifecycleListener {
             attachScreenshot(result, "Passed");
         }
 
-        if (isScreenshotPassed() && Status.FAILED.equals(status)) {
+        if (isScreenshotFailed() && Status.FAILED.equals(status)) {
             attachScreenshot(result, "Failed");
+        }
+
+        if (isScreenshotSkipped() && Status.SKIPPED.equals(status)) {
+            attachScreenshot(result, "Skipped");
+        }
+
+        if (isScreenshotBroken() && Status.BROKEN.equals(status)) {
+            attachScreenshot(result, "Broken");
         }
     }
 
