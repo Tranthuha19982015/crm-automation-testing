@@ -755,8 +755,8 @@ public class WebUI {
 
         clickElement(dropdown);
         setText(inputSearchDropdown, expected);
-        sleep(0.5);
         sendTextByAction(inputSearchDropdown, " ");
+        sleep(0.5);
         waitForElementToBeClickable(optionDropdown, 20);
         clickElement(optionDropdown);
     }
