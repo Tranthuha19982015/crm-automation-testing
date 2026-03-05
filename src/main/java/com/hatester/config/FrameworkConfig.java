@@ -1,86 +1,145 @@
 package com.hatester.config;
 
+import com.hatester.enums.BrowserType;
 import com.hatester.helpers.PropertiesHelper;
+import com.hatester.utils.LogUtils;
 
 //Runtime config loaded from config.properties in @BeforeSuite
 public class FrameworkConfig {
+    //Chặn kế thừa vì là utility class toàn static
+    private FrameworkConfig() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+    private static String getRaw(String key) {
+        return PropertiesHelper.getValue(key);
+    }
+
+    private static String getRequired(String key) {
+        String value = getRaw(key);
+        if (value == null || value.isBlank()) {
+            throw new RuntimeException("Config key '" + key + "' is missing or empty");
+        }
+        return value.trim();
+    }
+
+    private static String getOptional(String key) {
+        String value = getRaw(key);
+        return (value == null || value.isBlank()) ? null : value.trim();
+    }
+
+    private static boolean getBoolean(String key) {
+        String value = getRequired(key);
+        if (!"true".equalsIgnoreCase(value) && !"false".equalsIgnoreCase(value)) {
+            throw new RuntimeException("Invalid boolean value for key '" + key + "': " + value);
+        }
+        return Boolean.parseBoolean(value);
+    }
+
+    private static int getInt(String key) {
+        try {
+            return Integer.parseInt(getRequired(key));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid int value for key '" + key + "'", e);
+        }
+    }
+
+    private static double getDouble(String key) {
+        try {
+            return Double.parseDouble(getRequired(key));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid double value for key '" + key + "'", e);
+        }
+    }
+
     public static String getExcelDataFilePath() {
-        return PropertiesHelper.getValue("EXCEL_DATA_FILE_PATH");
+        return getRequired("EXCEL_DATA_FILE_PATH");
     }
 
     public static String getUploadFilePath() {
-        return PropertiesHelper.getValue("UPLOAD_FILE_PATH");
+        return getRequired("UPLOAD_FILE_PATH");
     }
 
-    public static String getBrowser() {
-        return PropertiesHelper.getValue("BROWSER");
+    public static BrowserType getBrowser() {
+        String raw = getOptional("BROWSER");
+
+        if (raw == null) {
+            return null; // cho phép null để dùng param TestNG
+        }
+
+        try {
+            //Chuyển giá trị truyền vào từ config: String thành Enum (có in hoa và bỏ khoảng trắng đầu cuối chuỗi)
+            return BrowserType.valueOf(raw.toUpperCase().trim());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid BROWSER config: " + raw);
+        }
     }
 
     public static boolean isHeadless() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("HEADLESS"));
+        return getBoolean("HEADLESS");
     }
 
     public static String getWindowSize() {
-        return PropertiesHelper.getValue("WINDOW_SIZE");
+        return getRequired("WINDOW_SIZE");
     }
 
     public static String getURL() {
-        return PropertiesHelper.getValue("URL");
+        return getRequired("URL");
     }
 
     public static String getEmail() {
-        return PropertiesHelper.getValue("EMAIL");
+        return getRequired("EMAIL");
     }
 
     public static String getPassword() {
-        return PropertiesHelper.getValue("PASSWORD");
+        return getRequired("PASSWORD");
     }
 
     public static String getAdminDashboardUrl() {
-        return PropertiesHelper.getValue("ADMIN_DASHBOARD_URL");
+        return getRequired("ADMIN_DASHBOARD_URL");
     }
 
     public static String getScreenshotPath() {
-        return PropertiesHelper.getValue("SCREENSHOT_PATH");
+        return getRequired("SCREENSHOT_PATH");
     }
 
     public static String getVideoRecordPath() {
-        return PropertiesHelper.getValue("VIDEO_RECORD_PATH");
+        return getRequired("VIDEO_RECORD_PATH");
     }
 
     public static boolean isScreenshotAllSteps() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("SCREENSHOT_ALL_STEPS"));
+        return getBoolean("SCREENSHOT_ALL_STEPS");
     }
 
     public static boolean isScreenshotPassed() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("SCREENSHOT_PASSED"));
+        return getBoolean("SCREENSHOT_PASSED");
     }
 
     public static boolean isScreenshotFailed() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("SCREENSHOT_FAILED"));
+        return getBoolean("SCREENSHOT_FAILED");
     }
 
     public static boolean isScreenshotSkipped() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("SCREENSHOT_SKIPPED"));
+        return getBoolean("SCREENSHOT_SKIPPED");
     }
 
     public static boolean isVideoRecord() {
-        return Boolean.parseBoolean(PropertiesHelper.getValue("VIDEO_RECORD"));
+        return getBoolean("VIDEO_RECORD");
     }
 
     public static int getWaitTimeout() {
-        return Integer.parseInt(PropertiesHelper.getValue("WAIT_TIMEOUT"));
+        return getInt("WAIT_TIMEOUT");
     }
 
     public static int getPoolTime() {
-        return Integer.parseInt(PropertiesHelper.getValue("POOL_TIME"));
+        return getInt("POOL_TIME");
     }
 
     public static double getSleepTime() {
-        return Double.parseDouble(PropertiesHelper.getValue("SLEEP_TIME"));
+        return getDouble("SLEEP_TIME");
     }
 
     public static int getPageLoadTimeout() {
-        return Integer.parseInt(PropertiesHelper.getValue("PAGE_LOAD_TIMEOUT"));
+        return getInt("PAGE_LOAD_TIMEOUT");
     }
 }
