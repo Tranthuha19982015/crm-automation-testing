@@ -5,32 +5,31 @@ import com.hatester.drivers.strategy.BrowserStrategy;
 import com.hatester.drivers.strategy.ChromeStrategy;
 import com.hatester.drivers.strategy.EdgeStrategy;
 import com.hatester.drivers.strategy.FirefoxStrategy;
+import com.hatester.enums.BrowserType;
 import com.hatester.utils.LogUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class DriverFactory {
-    public static WebDriver createDriver() {
-        String browser = FrameworkConfig.getBrowser().trim().toLowerCase();
-
+    public static WebDriver createDriver(BrowserType browserType) {
         BrowserStrategy strategy;
-        switch (browser) {
-            case "chrome":
+
+        switch (browserType) {
+            case CHROME:
                 LogUtils.info("Launching Chrome browser...");
                 strategy = new ChromeStrategy();
                 break;
-            case "firefox":
+            case FIREFOX:
                 LogUtils.info("Launching Firefox browser...");
                 strategy = new FirefoxStrategy();
                 break;
-            case "edge":
+            case EDGE:
                 LogUtils.info("Launching Edge browser...");
                 strategy = new EdgeStrategy();
                 break;
             default:
-                LogUtils.info("Browser: " + browser + " is invalid, Launching Chrome as browser of choice...");
-                strategy = new ChromeStrategy();
+                throw new RuntimeException("Unsupported browser: " + browserType);
         }
         return strategy.createDriver();
     }

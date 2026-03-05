@@ -1,28 +1,28 @@
 package com.hatester.drivers.strategy;
 
+import com.hatester.config.FrameworkConfig;
+import com.hatester.drivers.DriverManager;
+import com.hatester.utils.LogUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import static com.hatester.config.FrameworkConfig.*;
-
-public class ChromeStrategy implements BrowserStrategy {
+public class ChromeStrategy extends AbstractBrowserStrategy {
     @Override
     public WebDriver createDriver() {
         ChromeOptions options = new ChromeOptions();
-        // Tắt popup lưu mật khẩu
+
+        // Disable Chrome popup
         options.addArguments("--disable-save-password-bubble");
-        // Tắt cảnh báo password bị leak
         options.addArguments("--disable-features=PasswordLeakDetection");
-        // Tắt các notification khác của Chrome
         options.addArguments("--disable-notifications");
         options.addArguments("--disable-infobars");
 
         if (isHeadless()) {
             options.addArguments("--headless=new");
-            options.addArguments("--window-size=" + getWindowSize());
         }
-
-        return new ChromeDriver(options);
+        WebDriver driver = new ChromeDriver(options);
+        configureWindow(driver);
+        return driver;
     }
 }

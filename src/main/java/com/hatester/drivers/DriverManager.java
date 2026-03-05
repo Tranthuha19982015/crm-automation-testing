@@ -1,5 +1,6 @@
 package com.hatester.drivers;
 
+import com.hatester.enums.BrowserType;
 import org.openqa.selenium.WebDriver;
 
 public class DriverManager {
@@ -12,8 +13,8 @@ public class DriverManager {
         return driver.get();
     }
 
-    public static void initDriver() {
-        driver.set(DriverFactory.createDriver());
+    public static void setDriver(BrowserType browserType) {
+        driver.set(DriverFactory.createDriver(browserType));
     }
 
     public static void quitDriver() {
