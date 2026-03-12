@@ -313,7 +313,7 @@ public class ProjectPage extends BasePage {
 
     public void clickEditProjectButton(String projectName) {
         WebUI.waitForElementVisible(projectItemInList(projectName));
-        WebUI.moveToElement(rowItemInList(projectName));
+        WebUI.hoverElement(rowItemInList(projectName));
 
         WebUI.clickElement(buttonEditProject(projectName));
 
@@ -327,7 +327,7 @@ public class ProjectPage extends BasePage {
 
     public void clickDeleteProjectButton(String projectName) {
         WebUI.waitForElementVisible(projectItemInList(projectName));
-        WebUI.moveToElement(rowItemInList(projectName));
+        WebUI.hoverElement(rowItemInList(projectName));
 
         WebUI.clickElement(buttonDeleteProject(projectName));
 

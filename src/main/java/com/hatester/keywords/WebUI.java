@@ -1,966 +1,323 @@
 package com.hatester.keywords;
 
-import com.hatester.drivers.DriverManager;
 import com.hatester.enums.MatchType;
-import com.hatester.reports.AllureManager;
-import com.hatester.utils.DataUtil;
-import com.hatester.utils.LogUtils;
-import io.qameta.allure.Step;
-import org.apache.commons.lang3.StringUtils;
+import com.hatester.keywords.browser.BrowserActions;
+import com.hatester.keywords.element.ClickActions;
+import com.hatester.keywords.element.ElementActions;
+import com.hatester.keywords.element.InputActions;
+import com.hatester.keywords.context.ContextActions;
+import com.hatester.keywords.form.FormActions;
+import com.hatester.keywords.interaction.RobotActions;
+import com.hatester.keywords.interaction.MouseActions;
+import com.hatester.keywords.scroll.ScrollActions;
+import com.hatester.keywords.verify.VerifyActions;
+import com.hatester.keywords.wait.WaitActions;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.KeyEvent;
-import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static com.hatester.config.FrameworkConfig.*;
 
 public class WebUI {
-    public static void logConsole(Object message) {
-        LogUtils.info(message);
-    }
-
-    public static void highlightElement(By by) {
-        String script = "arguments[0].style.border='3px solid red';";
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript(script, getWebElement(by));
-    }
-
-    public static void highlightElement(By by, String color) {
-        String script = "arguments[0].style.border='3px solid " + color + "';";
-        ((JavascriptExecutor) DriverManager.getDriver()).executeScript(script, getWebElement(by));
-    }
-
+    //WAIT
     public static void sleep(double second) {
-        try {
-            Thread.sleep((long) (1000 * second));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        WaitActions.sleep(second);
     }
 
     public static WebElement waitForElementVisible(By by) {
-        WebElement element = null;
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
-            element = wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-            highlightElement(by);
-            return element;
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for the element Visible. " + by.toString());
-            Assert.fail("Timeout waiting for the element Visible. " + by.toString());
-        }
-        return element;
+        return WaitActions.waitForElementVisible(by);
     }
 
     public static WebElement waitForElementVisible(By by, int seconds) {
-        WebElement element = null;
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
-            element = wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-            highlightElement(by);
-            return element;
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for the element Visible with " + seconds + "s : " + by);
-            Assert.fail("Timeout waiting for the element Visible with " + seconds + "s : " + by);
-        }
-        return element;
+        return WaitActions.waitForElementVisible(by, seconds);
     }
 
     public static WebElement waitForElementToBeClickable(By by) {
-        WebElement element = null;
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
-            element = wait.until(ExpectedConditions.elementToBeClickable(by));
-            highlightElement(by);
-            return element;
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for the element to be clickable. " + by.toString());
-            Assert.fail("Timeout waiting for the element to be clickable. " + by.toString());
-        }
-        return element;
+        return WaitActions.waitForElementToBeClickable(by);
     }
 
     public static WebElement waitForElementToBeClickable(By by, int seconds) {
-        WebElement element = null;
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
-            element = wait.until(ExpectedConditions.elementToBeClickable(by));
-            highlightElement(by);
-            return element;
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for the element to be clickable with " + seconds + "(s) : " + by);
-            Assert.fail("Timeout waiting for the element to be clickable with " + seconds + "(s) : " + by);
-        }
-        return element;
+        return WaitActions.waitForElementToBeClickable(by, seconds);
     }
 
     public static WebElement waitForElementPresent(By by) {
-        WebElement element = null;
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
-            element = wait.until(ExpectedConditions.presenceOfElementLocated(by));
-            highlightElement(by);
-            return element;
-        } catch (Throwable error) {
-            LogUtils.error("Element not exist " + by.toString());
-            Assert.fail("Element not exist " + by.toString());
-        }
-        return element;
+        return WaitActions.waitForElementPresent(by);
     }
 
     public static WebElement waitForElementPresent(By by, int seconds) {
-        WebElement element = null;
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
-            element = wait.until(ExpectedConditions.presenceOfElementLocated(by));
-            highlightElement(by);
-            return element;
-        } catch (Throwable error) {
-            LogUtils.error("Element not exist with " + seconds + "(s) : " + by);
-            Assert.fail("Element not exist with " + seconds + "(s) : " + by);
-        }
-        return element;
+        return WaitActions.waitForElementPresent(by, seconds);
     }
 
     public static void waitForPageLoaded() {
-        WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getPageLoadTimeout()), Duration.ofMillis(getPoolTime()));
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-
-        ExpectedCondition<Boolean> jsLoad = driver -> ((JavascriptExecutor) DriverManager.getDriver())
-                .executeScript("return document.readyState")
-                .toString().equals("complete");
-
-        boolean jsReady = js.executeScript("return document.readyState").toString().equals("complete");
-
-        if (!jsReady) {
-            try {
-                wait.until(jsLoad);
-            } catch (Throwable error) {
-                error.printStackTrace();
-                Assert.fail("FAILED. Timeout waiting for page load.");
-            }
-        }
+        WaitActions.waitForPageLoaded();
     }
 
     public static void waitForElementNotVisible(By by) {
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
-            wait.until(ExpectedConditions.invisibilityOf(getWebElement(by)));
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for the element Not Visible " + by.toString());
-            Assert.fail("Timeout waiting for the element Not Visible " + by.toString());
-        }
+        WaitActions.waitForElementNotVisible(by);
     }
 
-    public static void waitForSearchResult(By by) {
-        try {
-            int oldCount = getWebElements(by).size();
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
-            wait.until(ExpectedConditions.numberOfElementsToBeLessThan(by, oldCount));
-        } catch (Throwable error) {
-            LogUtils.error("Timeout while waiting for search results. " + by.toString());
-            Assert.fail("Timeout while waiting for search results. " + by.toString());
-        }
+    public static void waitForElementNotVisible(By by, int seconds) {
+        WaitActions.waitForElementNotVisible(by, seconds);
     }
 
-    public static void switchToFrame(By by) {
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(getWaitTimeout()), Duration.ofMillis(getPoolTime()));
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(by));
-            LogUtils.info("Switched to iframe: " + by);
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for Switch To Frame. " + by.toString());
-            Assert.fail("Timeout waiting for Switch To Frame. " + by.toString());
-        }
+    //BROWSER
+    public static void openURL(String url) {
+        BrowserActions.openURL(url);
     }
 
-    public static void switchToFrame(By by, int seconds) {
-        try {
-            WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds), Duration.ofMillis(getPoolTime()));
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(by));
-            LogUtils.info("Switched to iframe: " + by);
-        } catch (Throwable error) {
-            LogUtils.error("Timeout waiting for switch to Frame with " + seconds + "s : " + by.toString());
-            Assert.fail("Timeout waiting for switch to Frame with " + seconds + "s : " + by.toString());
-        }
-    }
-
-    public static void switchToDefaultContent() {
-        DriverManager.getDriver().switchTo().defaultContent();
-        LogUtils.info("Switched back to default content");
-    }
-
-    public static void switchToParentFrame() {
-        DriverManager.getDriver().switchTo().parentFrame();
-        LogUtils.info("Switched back to parent frame");
-    }
-
-    public static void acceptAlert() {
-        DriverManager.getDriver().switchTo().alert().accept();
-        LogUtils.info("Accepted alert");
-    }
-
-    public static void dismissAlert() {
-        DriverManager.getDriver().switchTo().alert().dismiss();
-        LogUtils.info("Dismissed alert");
-    }
-
-    public static Boolean checkElementExist(By by) {
-        List<WebElement> listElement = getWebElements(by);
-
-        if (listElement.size() > 0) {
-            LogUtils.info("checkElementExist: " + true + " --- " + by);
-            return true;
-        } else {
-            LogUtils.info("checkElementExist: " + false + " --- " + by);
-            return false;
-        }
-    }
-
-    public static boolean checkElementExist(By by, int maxRetries, int waitTimeMillis) {
-        int retryCount = 0;
-
-        while (retryCount < maxRetries) {
-            try {
-                WebElement element = getWebElement(by);
-                if (element != null) {
-                    LogUtils.info("Element was found on attempt " + (retryCount + 1));
-                    return true;
-                }
-            } catch (NoSuchElementException e) {
-                LogUtils.warn("Element not found. Retry attempt " + (retryCount + 1));
-                retryCount++;
-                try {
-                    Thread.sleep(waitTimeMillis);
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                }
-            }
-        }
-        LogUtils.info("Failed to find element after " + maxRetries + " attempts.");
-        return false;
-    }
-
-    public static boolean isCheckboxSelected(By by) {
-        WebElement element = getWebElement(by);
-        if (element.isSelected()) {
-            LogUtils.info("Element is selected");
-            return true;
-        } else {
-            LogUtils.info("Element is not selected");
-            return false;
-        }
-    }
-
-    public static WebElement getWebElement(By by) {
-        return DriverManager.getDriver().findElement(by);
-    }
-
-    public static List<WebElement> getWebElements(By by) {
-        return DriverManager.getDriver().findElements(by);
+    public static String getCurrentURL() {
+        return BrowserActions.getCurrentURL();
     }
 
     public static void refreshPage() {
-        DriverManager.getDriver().navigate().refresh();
+        BrowserActions.refreshPage();
     }
 
-    @Step("Navigate to URL: {0}")
-    public static void openURL(String url) {
-        DriverManager.getDriver().get(url);
-        waitForPageLoaded();
-        sleep(getSleepTime());
-        LogUtils.info("Navigate to URL: " + url);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+    //CONTEXT: IFRAME, ALERT, POPUP-WINDOW
+    public static void switchToFrame(By by) {
+        ContextActions.switchToFrame(by);
     }
 
-    @Step
-    public static String getCurrentURL() {
-        sleep(getSleepTime());
-        String currentUrl = DriverManager.getDriver().getCurrentUrl();
-        LogUtils.info("Current URL: " + currentUrl);
-        AllureManager.saveTextLog("Current URL: " + currentUrl);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
-        return currentUrl;
+    public static void switchToFrame(By by, int seconds) {
+        ContextActions.switchToFrame(by, seconds);
     }
 
-    @Step("Click on element: {0}")
+    public static void switchToDefaultContent() {
+        ContextActions.switchToDefaultContent();
+    }
+
+    public static void switchToParentFrame() {
+        ContextActions.switchToParentFrame();
+    }
+
+    public static void acceptAlert() {
+        ContextActions.acceptAlert();
+    }
+
+    public static void dismissAlert() {
+        ContextActions.dismissAlert();
+    }
+
+    //ELEMENT
+    public static void highlightElement(By by) {
+        ElementActions.highlightElement(by);
+    }
+
+    public static void highlightElement(By by, String color) {
+        ElementActions.highlightElement(by, color);
+    }
+
+    public static WebElement getWebElement(By by) {
+        return ElementActions.getWebElement(by);
+    }
+
+    public static List<WebElement> getWebElements(By by) {
+        return ElementActions.getWebElements(by);
+    }
+
+    public static Boolean checkElementExist(By by) {
+        return ElementActions.checkElementExist(by);
+    }
+
+    public static boolean checkElementExist(By by, int maxRetries, int waitTimeMillis) {
+        return ElementActions.checkElementExist(by, maxRetries, waitTimeMillis);
+    }
+
+    public static boolean isCheckboxSelected(By by) {
+        return ElementActions.isCheckboxSelected(by);
+    }
+
     public static void clickElement(By by) {
-        sleep(getSleepTime());
-        waitForElementToBeClickable(by).click();
-        LogUtils.info("Click on element " + by);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        ClickActions.clickElement(by);
     }
 
-    @Step("Click on element {0} with timeout {1} seconds")
     public static void clickElement(By by, int seconds) {
-        sleep(getSleepTime());
-        waitForElementToBeClickable(by, seconds).click();
-        LogUtils.info("Click on element " + by + "with " + seconds + "(s)");
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        ClickActions.clickElement(by, seconds);
     }
 
-    @Step("Clear text of element: {0}")
     public static void clearElementText(By by) {
-        sleep(getSleepTime());
-        waitForElementVisible(by).clear();
-        LogUtils.info("Clear text of element: " + by);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.clearElementText(by);
     }
 
-    @Step("Clear text of element {0} with timeout {1} seconds")
     public static void clearElementText(By by, int seconds) {
-        sleep(getSleepTime());
-        waitForElementVisible(by).clear();
-        LogUtils.info("Clear text of element " + by + "with " + seconds + "(s)");
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.clearElementText(by, seconds);
     }
 
-    @Step("Set text {1} on element {0}")
     public static void setText(By by, String text) {
-        sleep(getSleepTime());
-        waitForElementVisible(by).sendKeys(text);
-        LogUtils.info("Set text " + text + " on element " + by);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.setText(by, text);
     }
 
-    @Step("Set text {1} on element {0} with timeout {2} seconds")
     public static void setText(By by, String text, int seconds) {
-        sleep(getSleepTime());
-        waitForElementVisible(by, seconds).sendKeys(text);
-        LogUtils.info("Set text " + text + " on element " + by + "with " + seconds + "(s)");
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.setText(by, text, seconds);
     }
 
-    @Step("Set key on element: {0}")
     public static void setKey(By by, Keys key) {
-        waitForElementVisible(by).sendKeys(key);
-        LogUtils.info("Set key on element: " + by);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.setKey(by, key);
     }
 
-    @Step("Set key on element: {0} with timeout {2} seconds")
     public static void setKey(By by, Keys key, int seconds) {
-        waitForElementVisible(by).sendKeys(key);
-        LogUtils.info("Set key on element: " + by + "with: " + seconds + "(s)");
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.setKey(by, key, seconds);
     }
 
-    @Step("Set text and key {1} on element {0} ")
     public static void setTextAndKey(By by, String text, Keys key) {
-        waitForPageLoaded();
-        getWebElement(by).sendKeys(text, key);
-        LogUtils.info("Set text and key " + text + " on element " + by);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        InputActions.setTextAndKey(by, text, key);
     }
 
-    @Step("Set text and key {1} on element {0} with timeout {3} seconds")
-    public static void setTextAndKey(By by, String text, Keys key, int seconds) {
-        waitForPageLoaded();
-        getWebElement(by).sendKeys(text, key);
-        LogUtils.info("Set text and key " + text + " on element " + by + "with " + seconds + "(s)");
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
-    }
-
-    @Step("Get text of element: {0}")
     public static String getElementText(By by) {
-        waitForElementVisible(by);
-        sleep(getSleepTime());
-        LogUtils.info("Get text of element: " + by);
-        String text = getWebElement(by).getText();
-        LogUtils.info("==> TEXT: " + text);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
-        AllureManager.saveTextLog("==> TEXT: " + text);
-        return text;
+        return ElementActions.getElementText(by);
     }
 
-    @Step("Get attribute {1} of element {0}")
     public static String getElementAttribute(By by, String attributeName) {
-        waitForElementVisible(by);
-        LogUtils.info("Get attribute of element: " + by);
-        String value = getWebElement(by).getAttribute(attributeName);
-        LogUtils.info("==> Attribute value: " + value);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
-        AllureManager.saveTextLog("==> Attribute value: " + value);
-        return value;
+        return ElementActions.getElementAttribute(by, attributeName);
     }
 
-    @Step("Get CSS value {1} of element {0}")
     public static String getElementCssValue(By by, String cssPropertyName) {
-        waitForElementVisible(by);
-        LogUtils.info("Get CSS value " + cssPropertyName + " of element " + by);
-        String value = getWebElement(by).getCssValue(cssPropertyName);
-        LogUtils.info("==> CSS value: " + value);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
-        AllureManager.saveTextLog("==> CSS value: " + value);
-        return value;
+        return ElementActions.getElementCssValue(by, cssPropertyName);
     }
 
+    //SCROLL
     public static void scrollToElement(By by) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].scrollIntoView(false);", waitForElementVisible(by));
-    }
-
-    public static void scrollToElement(WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].scrollIntoView(false);", element);
+        ScrollActions.scrollToElement(by);
     }
 
     public static void scrollToElementAtTop(By by) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].scrollIntoView(true);", waitForElementVisible(by));
+        ScrollActions.scrollToElementAtTop(by);
     }
 
     public static void scrollToElementAtBottom(By by) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].scrollIntoView(false);", waitForElementVisible(by));
+        ScrollActions.scrollToElementAtBottom(by);
     }
 
     public static void scrollToElementAtTop(WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].scrollIntoView(true);", element);
+        ScrollActions.scrollToElementAtTop(element);
     }
 
     public static void scrollToElementAtBottom(WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].scrollIntoView(false);", element);
+        ScrollActions.scrollToElementAtBottom(element);
     }
 
     public static void scrollToPosition(int X, int Y) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("window.scrollTo(" + X + "," + Y + ");");
+        ScrollActions.scrollToPosition(X, Y);
     }
 
-    @Step("Set slider value to: {2}%")
     public static void setSliderValue(By hiddenInputBy, By sliderHandleBy, int percent) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-
-        WebElement hiddenInput = getWebElement(hiddenInputBy);
-        WebElement sliderHandle = getWebElement(sliderHandleBy);
-
-        // 1. Clamp theo min/max nếu có
-        String minAttr = hiddenInput.getAttribute("min");
-        String maxAttr = hiddenInput.getAttribute("max");
-
-        int min = StringUtils.isNotBlank(minAttr) ? Integer.parseInt(minAttr) : 0;
-        int max = StringUtils.isNotBlank(maxAttr) ? Integer.parseInt(maxAttr) : 100;
-
-        percent = Math.max(min, Math.min(percent, max));  //ép giá trị vào khoảng hợp lệ [min,max]
-
-        // 2. Check current value (QUAN TRỌNG khi EDIT)
-        String currentValue = hiddenInput.getAttribute("value");
-        if (String.valueOf(percent).equals(currentValue)) {
-            LogUtils.info("Slider already at value: " + percent + "%. Skip update.");
-            return;
-        }
-
-        // 3. Set value + trigger đầy đủ event
-        js.executeScript(
-                "arguments[0].value = arguments[2];" +
-                        "arguments[1].style.left = arguments[2] + '%';" +
-                        "arguments[0].dispatchEvent(new Event('change'));",
-                hiddenInput,
-                sliderHandle,
-                percent
-        );
-
-        LogUtils.info("Set slider value to: " + percent + "%");
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        ElementActions.setSliderValue(hiddenInputBy, sliderHandleBy, percent);
     }
 
-    @Step("Click on element: {0}")
     public static void clickJS(By by) {
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        js.executeScript("arguments[0].click();", getWebElement(by));
-        LogUtils.info("Click on element " + by);
-        if (isScreenshotAllSteps()) {
-            AllureManager.saveScreenshotPNG();
-        }
+        ClickActions.clickJS(by);
     }
 
-    public static boolean moveToElement(By by) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.moveToElement(getWebElement(by)).release().build().perform();
-            return true;
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-            return false;
-        }
+    //ACTIONS CLASS
+    public static void hoverElement(By by) {
+        MouseActions.hoverElement(by);
     }
 
-    public static boolean moveToOffset(int X, int Y) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.moveByOffset(X, Y).build().perform();
-            return true;
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-            return false;
-        }
+    public static void moveToOffset(int X, int Y) {
+        MouseActions.moveToOffset(X, Y);
     }
 
-    public static boolean hoverElement(By by) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.moveToElement(getWebElement(by)).perform();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public static void dragAndDrop(By fromElement, By toElement) {
+        MouseActions.dragAndDrop(fromElement, toElement);
     }
 
-    public static boolean mouseHover(By by) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.moveToElement(getWebElement(by)).perform();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public static void dragAndDropElement(By fromElement, By toElement) {
+        MouseActions.dragAndDropElement(fromElement, toElement);
     }
 
-    public static boolean dragAndDrop(By fromElement, By toElement) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.dragAndDrop(getWebElement(fromElement), getWebElement(toElement)).perform();
-            return true;
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-            return false;
-        }
+    public static void dragAndDropOffset(By fromElement, int X, int Y) {
+        MouseActions.dragAndDropOffset(fromElement, X, Y);
     }
 
-    public static boolean dragAndDropElement(By fromElement, By toElement) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.clickAndHold(getWebElement(fromElement)).moveToElement(getWebElement(toElement)).release(getWebElement(toElement)).build().perform();
-            return true;
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean dragAndDropOffset(By fromElement, int X, int Y) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.clickAndHold(getWebElement(fromElement)).pause(1).moveByOffset(X, Y).release().build().perform();
-            return true;
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean clickToElementByActions(By by) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.moveToElement(getWebElement(by)).click().build().perform();
-            return true;
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-            return false;
-        }
+    public static void clickByActions(By by) {
+        MouseActions.clickByActions(by);
     }
 
     public static void sendTextByAction(By by, String text) {
-        try {
-            Actions action = new Actions(DriverManager.getDriver());
-            action.click(getWebElement(by)).sendKeys(Keys.END).sendKeys(text).build().perform();
-        } catch (Exception e) {
-            LogUtils.info(e.getMessage());
-        }
+        MouseActions.sendTextByAction(by, text);
     }
 
-    public static boolean pressENTER() {
-        try {
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_ENTER);
-            robot.keyRelease(KeyEvent.VK_ENTER);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    //ROBOT CLASS
+    public static void pressENTER() {
+        RobotActions.pressENTER();
     }
 
-    public static boolean pressESC() {
-        try {
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_ESCAPE);
-            robot.keyRelease(KeyEvent.VK_ESCAPE);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public static void pressESC() {
+        RobotActions.pressESC();
     }
 
-    public static boolean pressF11() {
-        try {
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_F11);
-            robot.keyRelease(KeyEvent.VK_F11);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public static void pressF11() {
+        RobotActions.pressF11();
     }
 
     public static void copyFilePathToClipboard(String file) {
-        StringSelection str = new StringSelection(file);
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(str, null);
+        RobotActions.copyFilePathToClipboard(file);
     }
 
     public static void pasteFromClipboard(int seconds, int delayTime) {
-        try {
-            sleep(seconds);
-            Robot robot = new Robot();
-            robot.setAutoDelay(delayTime);
-
-            robot.keyPress(KeyEvent.VK_CONTROL);
-            robot.keyRelease(KeyEvent.VK_V);
-
-            robot.keyRelease(KeyEvent.VK_V);
-            robot.keyRelease(KeyEvent.VK_CONTROL);
-
-            robot.keyPress(KeyEvent.VK_ENTER);
-            robot.keyRelease(KeyEvent.VK_ENTER);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        RobotActions.pasteFromClipboard(seconds, delayTime);
     }
 
+    //VERIFY
     public static boolean verifyEquals(Object actual, Object expected) {
-        waitForPageLoaded();
-        LogUtils.info("Verify equals: " + actual + " and " + expected);
-        AllureManager.saveTextLog("Verify equals: " + actual + " and " + expected);
-        boolean check = actual.equals(expected);
-        return check;
+        return VerifyActions.verifyEquals(actual, expected);
     }
 
     public static void assertEquals(Object actual, Object expected, String message) {
-        waitForPageLoaded();
-        LogUtils.info("Assert equals: " + actual + " and " + expected);
-        AllureManager.saveTextLog("Assert equals: " + actual + " and " + expected);
-        Assert.assertEquals(actual, expected, message);
+        VerifyActions.assertEquals(actual, expected, message);
     }
 
     public static boolean verifyContains(String actual, String expected) {
-        waitForPageLoaded();
-        LogUtils.info("Verify contains: " + actual + " and " + expected);
-        AllureManager.saveTextLog("Verify contains: " + actual + " and " + expected);
-        boolean check = actual.contains(expected);
-        return check;
+        return VerifyActions.verifyContains(actual, expected);
     }
 
     public static void assertContains(String actual, String expected, String message) {
-        waitForPageLoaded();
-        LogUtils.info("Assert contains: " + actual + " and " + expected);
-        AllureManager.saveTextLog("Assert contains: " + actual + " and " + expected);
-        boolean check = actual.contains(expected);
-        Assert.assertTrue(check, message);
+        VerifyActions.assertContains(actual, expected, message);
     }
 
-    //handle element
+    //FORM
     public static void setTextIfChanged(By by, String expected, String attribute) {
-        // Excel không có cột thì bỏ qua trường này
-        if (expected == null) {
-            return;
-        }
-
-        String actual = getElementAttribute(by, attribute);
-
-        // Excel có cột nhưng ô để trống → clear
-        if (expected.isEmpty()) {
-            if (!actual.isEmpty()) {
-                clearElementText(by);
-            }
-            return;
-        }
-
-        if (expected.equals(actual)) {
-            return;
-        }
-
-        clearElementText(by);
-        setText(by, expected);
+        FormActions.setTextIfChanged(by, expected, attribute);
     }
 
     public static void selectDropdownIfChanged(By dropdown, String expected, String attribute, By optionDropdown) {
-        if (StringUtils.isBlank(expected)) {
-            return;
-        }
-
-        String actual = getElementAttribute(dropdown, attribute);
-        if (expected.equals(actual)) {
-            return;
-        }
-
-        clickElement(dropdown);
-        clickElement(optionDropdown);
+        FormActions.selectDropdownIfChanged(dropdown, expected, attribute, optionDropdown);
     }
 
     public static void selectSearchableDropdownIfChanged(By dropdown, String expected, String attribute, By inputSearchDropdown, By optionDropdown) {
-        if (StringUtils.isBlank(expected)) {
-            return;
-        }
-
-        String actual = getElementAttribute(dropdown, attribute);
-        if (expected.equals(actual)) {
-            return;
-        }
-
-        clickElement(dropdown);
-        setText(inputSearchDropdown, expected);
-        sendTextByAction(inputSearchDropdown, " ");
-        sleep(0.5);
-        waitForElementToBeClickable(optionDropdown, 20);
-        clickElement(optionDropdown);
+        FormActions.selectSearchableDropdownIfChanged(dropdown, expected, attribute, inputSearchDropdown, optionDropdown);
     }
 
-    //Function<String, By>: là Java Function, Nhận vào 1 giá trị kiểu String → Trả ra 1 giá trị kiểu By
     public static void selectMultiDropdownToggleIfChanged(By dropdown, List<String> expected, String attribute, Function<String, By> optionByText) {
-        //Không truyền dữ liệu → không làm gì
-        if (expected.size() <= 0 || expected == null) {
-            return;
-        }
-
-        //Lấy giá trị đang selected trên UI
-        List<String> current;
-
-        String raw = getElementAttribute(dropdown, attribute);
-
-        if (raw == null || raw.isBlank() || raw.equalsIgnoreCase("Nothing selected")) {
-            current = Collections.emptyList();
-        } else {
-            current = DataUtil.parseList(raw);
-        }
-
-        //chuyển list thành set để bỏ qua thứ tự khi duyệt for
-        Set<String> expectedSet = expected.stream().map(String::trim).collect(Collectors.toSet());
-        Set<String> currentSet = current.stream().map(String::trim).collect(Collectors.toSet());
-
-        //Mở dropdown
-        clickElement(dropdown);
-
-        //Xóa giá trị trên UI nếu không có trong excel
-        for (String value : currentSet) {
-            if (!expectedSet.contains(value)) {
-                clickElement(optionByText.apply(value));
-            }
-        }
-
-        //Add giá trị thiếu (giữ thứ tự Excel)
-        for (String value : expected) {
-            if (!currentSet.contains(value)) {
-                clickElement(optionByText.apply(value));
-            }
-        }
-
-        //Đóng dropdown
-        clickElement(dropdown);
+        FormActions.selectMultiDropdownToggleIfChanged(dropdown, expected, attribute, optionByText);
     }
 
-    //Multi-value input dạng chip / token / pill  (VD: tags, labels,...)
     public static void setMultiChipInput(By input, List<String> expected, By chipRemoveIcon, By blurTarget) {
-        // 1. Excel không có cột cần thao tác → bỏ qua
-        if (expected == null) {
-            return;
-        }
-
-        // 2. Xoá toàn bộ thẻ hiện tại trên UI (nếu có)
-        List<WebElement> listRemoveIcon = getWebElements(chipRemoveIcon);
-        while (!listRemoveIcon.isEmpty()) {
-            listRemoveIcon.get(0).click();
-            listRemoveIcon = getWebElements(chipRemoveIcon);
-        }
-
-        // 3. Excel có cột cần thao tác nhưng ô để trống → chỉ xoá, không add
-        if (expected.isEmpty()) {
-            return;
-        }
-
-        // 4. Add lại thẻ theo Excel
-        for (String member : expected) {
-            setTextAndKey(input, member, Keys.ENTER);
-        }
-
-        clickElement(blurTarget);
+        FormActions.setMultiChipInput(input, expected, chipRemoveIcon, blurTarget);
     }
 
     public static void setTextInIframeIfChanged(By iframe, By iframeEditor, String expected) {
-        if (expected == null) {
-            return;
-        }
-
-        switchToFrame(iframe);
-
-        try {
-            String actual = getElementText(iframeEditor);
-
-            if (expected.isEmpty()) {
-                if (!actual.isEmpty()) {
-                    clearElementText(iframeEditor);
-                }
-                return;
-            }
-
-            if (expected.equals(actual)) {
-                return;
-            }
-
-            clearElementText(iframeEditor);
-            setText(iframeEditor, expected);
-        } finally {
-            switchToDefaultContent();
-        }
+        FormActions.setTextInIframeIfChanged(iframe, iframeEditor, expected);
     }
 
     public static void setCheckboxIfChanged(By checkbox, boolean expected, By label) {
-        boolean actual = isCheckboxSelected(checkbox);
-        if (actual == expected) {
-            return;
-        }
-
-        clickElement(label);
+        FormActions.setCheckboxIfChanged(checkbox, expected, label);
     }
 
     public static void uploadMultiFileBySendkeys(By openAttachLocator, Function<Integer, By> addMoreIconLocator,
                                                  Function<Integer, By> fileInputLocator, List<String> files, String baseUploadPath) {
-        if (files == null || files.isEmpty()) {
-            return;
-        }
-
-        if (openAttachLocator != null) {
-            clickElement(openAttachLocator);
-        }
-
-        // Click icon Add more files nếu có nhiều hơn 1 file
-        if (files.size() > 1 && addMoreIconLocator != null) {
-            for (int i = 0; i < files.size() - 1; i++) {
-                clickElement(addMoreIconLocator.apply(0));
-            }
-        }
-
-        // Set file path
-        for (int i = 0; i < files.size(); i++) {
-            String fullPath = baseUploadPath + files.get(i);
-            setText(fileInputLocator.apply(i), fullPath);
-        }
+        FormActions.uploadMultiFileBySendkeys(openAttachLocator, addMoreIconLocator, fileInputLocator, files, baseUploadPath);
     }
 
     public static void setSlider(By inputHidden, By slider, String expected) {
-        if (StringUtils.isBlank(expected)) {
-            return;
-        }
-
-        try {
-            int percent = Integer.parseInt(expected.trim());
-            setSliderValue(inputHidden, slider, percent);
-        } catch (NumberFormatException e) {
-            LogUtils.error("Invalid slider value: " + expected);
-            throw e;
-        }
+        FormActions.setSlider(inputHidden, slider, expected);
     }
 
-    @Step("Verify column [{4}] with expected value '{3}' using condition '{5}'")
     public static void verifyTableColumnValues(By rowLocator, By cellLocatorTemplate, int columnIndex,
                                                String expectedValue, String columnName, MatchType matchType) {
-        LogUtils.info("Verify column [" + columnName + "] with expected value '" + expectedValue + "' using condition '" + matchType + "'");
-
-        //Xác định số dòng của table sau khi search
-        List<WebElement> rows = getWebElements(rowLocator);
-        int totalRows = rows.size();
-
-        LogUtils.info("Total rows found in table: " + totalRows);
-        Assert.assertTrue(totalRows > 0, "Table has no data");
-
-        //Duyệt từng dòng
-        for (int i = 1; i <= totalRows; i++) {
-            String rawXpath = cellLocatorTemplate.toString().replace("By.xpath: ", "");
-            By cellLocator = By.xpath(String.format(rawXpath, i, columnIndex));
-
-            WebElement cell = getWebElement(cellLocator);
-            scrollToElementAtBottom(cell);
-
-            String actualValue = getElementText(cellLocator).trim();
-
-            LogUtils.info("Row " + i + " | Expected: " + expectedValue + " | Actual: " + actualValue);
-            AllureManager.saveTextLog("Row " + i + " | Expected: " + expectedValue + " | Actual: " + actualValue);
-
-            //Switch expression (Java 14+) /// Dấu -> thay thế hoàn toàn break
-            //Trả về một giá trị và gán trực tiếp vào result
-            boolean result = switch (matchType) {
-                case CONTAINS -> actualValue.toUpperCase().contains(expectedValue.toUpperCase());
-                case EQUALS -> actualValue.equalsIgnoreCase(expectedValue);
-            };
-
-            Assert.assertTrue(result, "Row " + i + " | Column [" + columnName + "] | Expected [" + expectedValue + "] not matched.");
-        }
+        FormActions.verifyTableColumnValues(rowLocator, cellLocatorTemplate, columnIndex, expectedValue, columnName, matchType);
     }
 
-    @Step("Verify all rows contain search value '{1}'")
     public static void verifyAllRowsContainSearchValue(By rowLocator, String searchValue) {
-        List<WebElement> rows = getWebElements(rowLocator);
-        int totalRows = rows.size();
-
-        LogUtils.info("Total rows found: " + totalRows);
-        Assert.assertTrue(totalRows > 0, "Table has no data after search");
-
-        for (int i = 0; i < totalRows; i++) {
-            WebElement row = rows.get(i);
-            scrollToElementAtBottom(row);
-
-            String rowText = row.getText().trim();
-
-            LogUtils.info("Row " + (i + 1) + " | Row Text: " + rowText);
-            AllureManager.saveTextLog("Row " + (i + 1) + " | Row Text: " + rowText);
-
-            boolean result = rowText.toUpperCase().contains(searchValue.toUpperCase());
-            Assert.assertTrue(result, "Row " + (i + 1) + " does not contain search value: " + searchValue);
-        }
+        FormActions.verifyAllRowsContainSearchValue(rowLocator, searchValue);
     }
 }
