@@ -57,7 +57,7 @@ public class DataProviderFactory {
     @DataProvider(name = "addCustomerData", parallel = false)
     public Object[][] addCustomer() {
         ExcelHelper excel = new ExcelHelper();
-        Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 2);
+        Object[][] excelDataMap = excel.getDataMap(getExcelDataFilePath() + EXCEL_FILE_NAME, EXCEL_SHEET_CUSTOMERS, 1, 1);
 
         Object[][] finalData = new Object[excelDataMap.length][1];
 
