@@ -186,7 +186,8 @@ The following screenshots illustrate test execution flow and reporting capabilit
 │   │   ├── 📁 config          # FrameworkConfig.java: runtime config loader
 │   │   ├── 📁 constants       # ExcelConstant, MessageConstant
 │   │   ├── 📁 drivers         # DriverFactory, DriverManager
-│   │   ├── 📁 drivers/strategy # Browser strategies (Chrome, Edge, Firefox)
+│   │   ├── 📁 drivers         # WebDriver management (DriverFactory, DriverManager)
+│   │   │   └── 📁 strategy    # Browser strategies (Chrome, Edge, Firefox)
 │   │   ├── 📁 enums           # BrowserType, CRMEnum, MatchType, ProjectTableColumn, TaskTableColumn
 │   │   ├── 📁 helpers         # CaptureHelper, ExcelHelper, PropertiesHelper, RuntimeDataHelper, SystemHelper
 │   │   ├── 📁 keywords        # WebUI facade & keyword-driven actions
@@ -197,13 +198,13 @@ The following screenshots illustrate test execution flow and reporting capabilit
 │   │   │   ├── 📁 scroll
 │   │   │   ├── 📁 interaction
 │   │   │   ├── 📁 verify
-│   │   │   └── 📁 context     # Fine-grained action classes
+│   │   │   └── 📁 context     
 │   │   ├── 📁 reports         # Reporting utilities (Allure helpers)
 │   │   └── 📁 utils           # LogUtils and other small reusable utilities
 │   │
 │   └── 📁 resources
-│       └── 📁 META-INF         # Framework-level resources
-│           └── 📁 services     # ServiceLoader configs for AllureListener & reporting
+│       └── 📁 META-INF        # Framework-level resources
+│           └── 📁 services    # ServiceLoader configs for AllureListener & reporting
 │
 ├── 📁 test
 │   ├── 📁 java/com/hatester
@@ -229,9 +230,9 @@ The following screenshots illustrate test execution flow and reporting capabilit
 │   └── 📁 videos              # Optional video recordings
 │
 ├── 📁 target                  # Compiled classes, Allure results, reports
-├── 📄 .gitignore               # Git ignore rules
-├── 📄 pom.xml                  # Maven project descriptor (dependencies, plugins)
-└── 📄 README.md                # Project overview & instructions
+├── 📄 .gitignore              # Git ignore rules
+├── 📄 pom.xml                 # Maven project descriptor (dependencies, plugins)
+└── 📄 README.md               # Project overview & instructions
 ```
 
 ---
@@ -320,6 +321,8 @@ mvn dependency:tree
 ## 🤝 Contributing
 
 Feel free to open issues or submit pull requests. Contributions are welcome!
+
+---
 
 ## 👩‍💻 Author
 
