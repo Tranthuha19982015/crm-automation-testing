@@ -10,6 +10,6 @@
         <suite-file path="crm-login-parallel.xml" />
         <suite-file path="crm-customers-parallel.xml" />
         <suite-file path="crm-projects-parallel.xml"/>
+        <suite-file path="crm-tasks-parallel.xml"/>
     </suite-files>
-
 </suite>

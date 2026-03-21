@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Tasks - Parallel" verbose="1">
+    <test name="Manage Tasks">
+        <classes>
+            <class name="com.hatester.crm.testcases.TaskTest"/>
+        </classes>
+    </test>
+</suite>
